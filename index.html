@@ -3,9 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MarmaCitas</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3A86FF",
+              secondary: "#A8DADC",
+              accent: "#FFBE0B",
+              background: "#F8FAFC",
+              text: "#1E293B",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              title: ["Poppins", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
 </head>
-<body>
-    
+
+
+<body class="font-sans bg-background text-text">
+
+    <header class="bg-background shadow-sm sticky top-0 z-50">
+        <nav
+            role="navigation"
+            aria-label="Navegacion principal"
+            class="container mx-auto px-6 py-4 flex flex-wrap items-center justify-between"
+        >
+            <!--LOGO-->
+            <a href="#inicio" class="flex items-center gap-2">
+                <img 
+                    src="./images/dental-care.png"
+                    alt="Logo de MarmaCitas"
+                    class="w-10 h-10"
+                />
+                <h1 class="font-title text-xl font-semibold text-primary">MarmaCitas</h1>
+            </a>
+
+            <!--Navegación-->
+            <ul class="flex flex-wrap gap-6 text-gray-700 font-medium">
+                <li><a href="#inicio" class="hover:text-primary transition">Inicio</a></li>
+                <li><a href="#servicios" class="hover:text-primary transition">Servicios</a></li>
+                <li><a href="#equipo" class="hover:text-primary transition">Nuestro equipo</a></li>
+                <li><a href="#opiniones" class="hover:text-primary transition">Opiniones</a></li>
+                <li><a href="#sobre-nosotros" class="hover:text-primary transition">Acerca de nostros</a></li>
+
+            </ul>
+
+            <div class="flex gap-3 mt-4 sm:mt-0">
+                <a href="#login" class="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Inicia Sesión
+                </a>
+                <a href="#registro" class="px-4 py-2 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition">
+                    Registrarse
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="h-20"></div>
+
+    <!--SECTION INICIO-->
+    <section
+        id="inicio"
+        class="container mx-auto px-6 py-16 flex flex-col md:flex-row items-center justify-between gap-12"
+    >
+        <div class="flex-1 text-center md:text-left">
+            <h2 class="text-4xl md:text-5xl font-title font-bold mb-4">
+                Cuidamos tu sonrisa con <br />
+                <span class="text-primary">atención odontológica profesional</span>
+            </h2>
+            <p class="text-gray-700 mb-6">En <strong class="text-primary">MarmaCitas</strong> podrás agendar, modificar o cancelar tus citas
+                odontológicas en línea. Conoce tu historial clínico, recibe recordatorios y
+                accede a un servicio profesional desde la comodidad de tu hogar.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a
+                 href="#registro"
+                 class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-blue-600 transition"
+                >
+                    📞Contactanos
+                </a>
+            </div>
+        </div>
+
+        <div class="flex-1">
+            <img 
+             src="./images/odontologia.png"
+             alt="" 
+             class="w-full max-w-md mx-auto"
+            >
+             
+        </div>
+
+    </section>
+
 </body>
 </html>
