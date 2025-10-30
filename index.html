@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,30 +8,28 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: "#3A86FF",
-              secondary: "#A8DADC",
-              accent: "#FFBE0B",
-              background: "#F8FAFC",
-              text: "#1E293B",
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3A86FF",
+                        secondary: "#A8DADC",
+                        accent: "#FFBE0B",
+                        background: "#F8FAFC",
+                        text: "#1E293B",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        title: ["Poppins", "sans-serif"],
+                    },
+                },
             },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              title: ["Poppins", "sans-serif"],
-            },
-          },
-        },
-      };
+        };
     </script>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet" />
 
 </head>
 
@@ -226,68 +225,98 @@
             </div>
         </div>
     </section>
-<!--SECCIÓN OPINIONES-->
-    
-<section class="py-16 bg-white" id="opiniones">
-  <div class="max-w-6xl mx-auto px-6 text-center">
-    <h2 class="text-4xl font-bold text-gray-800 mb-4">Lo que nuestros pacientes dicen</h2>
-    <p class="text-gray-600 mb-12 max-w-3xl mx-auto">
-      La satisfacción de nuestros pacientes es nuestra mayor recompensa. En 
-      <span class="font-semibold text-blue-600">MarmaCitas</span> trabajamos cada día para brindar un servicio humano, 
-      puntual y de calidad.
-    </p>
 
-    <div class="grid gap-8 md:grid-cols-3">
-      <!-- Testimonio 1 -->
-      <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
-        <div class="flex justify-center mb-4">
-          <img
-            src="https://randomuser.me/api/portraits/women/44.jpg"
-            alt="Paciente 1"
-            class="w-20 h-20 rounded-full object-cover"
-          />
-        </div>
-        <p class="text-gray-600 italic mb-4">
-          “El sistema de citas es muy fácil de usar. Pude agendar mi limpieza sin hacer filas y me atendieron justo a tiempo. Excelente servicio.”
-        </p>
-        <h3 class="font-semibold text-gray-800">Mariana López</h3>
-        <p class="text-blue-600 text-sm">Paciente de limpieza dental</p>
-      </div>
+    <!--SECCIÓN OPINIONES-->
 
-      <!-- Testimonio 2 -->
-      <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
-        <div class="flex justify-center mb-4">
-          <img
-            src="https://randomuser.me/api/portraits/men/55.jpg"
-            alt="Paciente 2"
-            class="w-20 h-20 rounded-full object-cover"
-          />
-        </div>
-        <p class="text-gray-600 italic mb-4">
-          “El consultorio es muy organizado. Recibí recordatorios por WhatsApp y todo el proceso fue muy claro. Recomiendo MarmaCitas sin dudarlo.”
-        </p>
-        <h3 class="font-semibold text-gray-800">Juan Esteban Rojas</h3>
-        <p class="text-blue-600 text-sm">Paciente de ortodoncia</p>
-      </div>
+    <section class="py-16 bg-white" id="opiniones">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-title font-bold text-primary mb-4">Lo que nuestros pacientes dicen</h2>
+            <p class="text-text max-w-2xl mx-auto">
+                La satisfacción de nuestros pacientes es nuestra mayor recompensa. En
+                <strong class="font-semibold text-primary">MarmaCitas</strong> trabajamos cada día para brindar un servicio
+                humano,
+                puntual y de calidad.
+            </p>
 
-      <!-- Testimonio 3 -->
-      <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
-        <div class="flex justify-center mb-4">
-          <img
-            src="https://randomuser.me/api/portraits/women/68.jpg"
-            alt="Paciente 3"
-            class="w-20 h-20 rounded-full object-cover"
-          />
+            <div class="grid gap-8 md:grid-cols-3 py-10">
+                <!-- Testimonio 1 -->
+                <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
+                    <div class="flex justify-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Paciente 1"
+                            class="w-20 h-20 rounded-full object-cover" />
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        “El sistema de citas es muy fácil de usar. Pude agendar mi limpieza sin hacer filas y me
+                        atendieron justo a tiempo. Excelente servicio.”
+                    </p>
+                    <h3 class="font-semibold text-gray-800">Mariana López</h3>
+                    <p class="text-primary text-sm">Paciente de limpieza dental</p>
+                </div>
+
+                <!-- Testimonio 2 -->
+                <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
+                    <div class="flex justify-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Paciente 2"
+                            class="w-20 h-20 rounded-full object-cover" />
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        “El consultorio es muy organizado. Recibí recordatorios por WhatsApp y todo el proceso fue muy
+                        claro. Recomiendo MarmaCitas sin dudarlo.”
+                    </p>
+                    <h3 class="font-semibold text-gray-800">Juan Esteban Rojas</h3>
+                    <p class="text-primary text-sm">Paciente de ortodoncia</p>
+                </div>
+
+                <!-- Testimonio 3 -->
+                <div class="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition">
+                    <div class="flex justify-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Paciente 3"
+                            class="w-20 h-20 rounded-full object-cover" />
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        “Tuve una urgencia dental y me dieron cita el mismo día. La atención fue excelente y el trato
+                        muy humano.”
+                    </p>
+                    <h3 class="font-semibold text-gray-800">Carolina Méndez</h3>
+                    <p class="text-primary text-sm">Paciente de urgencias odontológicas</p>
+                </div>
+            </div>
         </div>
-        <p class="text-gray-600 italic mb-4">
-          “Tuve una urgencia dental y me dieron cita el mismo día. La atención fue excelente y el trato muy humano.”
-        </p>
-        <h3 class="font-semibold text-gray-800">Carolina Méndez</h3>
-        <p class="text-blue-600 text-sm">Paciente de urgencias odontológicas</p>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
+
+
+    <!--SECCIÓN SOBRE NOSOTROS-->
+
+    <section class="py-20 bg-blue-50" id="sobre-nosotros">
+        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <!-- Imagen -->
+            <div class="flex justify-center">
+                <img src="./images/dental-clinic.png" alt="Consultorio odontológico" class="rounded-2xl shadow-lg" />
+            </div>
+
+            <!-- Texto -->
+            <div>
+                <h2 class="text-3xl md:text-4xl font-title font-bold text-primary mb-4">Sobre nuestro consultorio</h2>
+                <p class="text-text mb-4">
+                    En <strong class="font-semibold text-primary">MarmaCitas</strong> creemos que la salud bucal es parte
+                    esencial del bienestar general.
+                    Somos un consultorio odontológico comprometido con ofrecer atención profesional, cálida y humana,
+                    respaldada por tecnología moderna y un equipo altamente capacitado.
+                </p>
+                <p class="text-text mb-4">
+                    Nuestro objetivo es facilitar la vida de nuestros pacientes mediante una plataforma digital
+                    que permite agendar, modificar y consultar citas odontológicas de manera fácil y rápida,
+                    garantizando siempre puntualidad, organización y calidad en cada atención.
+                </p>
+                <p class="text-text">
+                    Más que un consultorio, somos una familia dedicada a cuidar sonrisas,
+                    brindando confianza y comodidad desde la primera cita.
+                </p>
+            </div>
+        </div>
+    </section>
+
+
 
 
 </body>
