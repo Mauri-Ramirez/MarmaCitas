@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarmaCitas - Crear Cuenta</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3A86FF",
+            secondary: "#A8DADC",
+            accent: "#FFBE0B",
+            background: "#F8FAFC",
+            text: "#1E293B",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            title: ["Poppins", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+</head>
+
+<body class="bg-background text-text font-sans min-h-screen flex flex-col">
+
+  
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+  <nav
+   role="navigation"
+   class="container mx-auto flex flex-wrap items-center justify-between px-6 py-4">
+    
+    <!-- Logo -->
+    <a href="./index.html" class="flex items-center gap-2">
+      <img
+        src="./images/dental-care.png"
+        alt="Logo del consultorio MarmaCitas"
+        class="w-10 h-10"
+      />
+      <h1 class="font-title text-xl font-semibold text-primary">
+        MarmaCitas
+      </h1>
+    </a>
+
+    <!-- Navegación  -->
+    <ul class="flex flex-wrap gap-6 text-gray-700 font-medium">
+      <li><a href="./index.html" class="hover:text-primary transition">Inicio</a></li>
+      <li><a href="#servicios" class="hover:text-primary transition">Servicios</a></li>
+      <li><a href="#equipo" class="hover:text-primary transition">Nuestro equipo</a></li>
+      <li><a href="#opiniones" class="hover:text-primary transition">Opiniones</a></li>
+      <li><a href="#sobre-nosotros" class="hover:text-primary transition">Acerca de nosotros</a></li>
+      
+    </ul>
+
+    
+    <div class="flex gap-3 mt-4 sm:mt-0">
+      <a href="./login.html" class="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+        Iniciar sesión
+      </a>
+      <a href="./registro.html" class="px-4 py-2 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition">
+        Registrarse
+      </a>
+    </div>
+  </nav>
+</header>
+
+  
+  
+
+  <!-- FORMULARIO -->
+  <main class="flex-1 flex justify-center py-10 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-[600px] flex flex-col gap-6">
+      
+      
+      <div class="flex flex-col gap-2 text-center">
+        <h1 class="text-3xl font-title font-bold text-primary">Crear Cuenta</h1>
+        <p class="text-gray-600">
+          Únete a MarmaCitas y gestiona tu salud dental de forma sencilla.
+        </p>
+      </div>
+
+      
+      <div class="bg-white shadow-lg rounded-2xl border border-gray-200 p-6 sm:p-8">
+
+        
+        <form action="#" method="POST" class="flex flex-col gap-6">
+
+          
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-medium">Nombre</span>
+            <input
+              type="text"
+              required
+              placeholder="Ej. Juan"
+              class="form-input h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+            />
+          </label>
+
+          
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-medium">Apellido</span>
+            <input
+              type="text"
+              required
+              placeholder="Ej. Pérez"
+              class="form-input h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+            />
+          </label>
+
+          
+          <label class="flex flex-col gap-2">
+            <span class="text-sm font-medium">Correo electrónico</span>
+            <input
+              type="email"
+              required
+              placeholder="correo@ejemplo.com"
+              class="form-input h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+            />
+          </label>
+
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <label class="flex flex-col flex-1 gap-2">
+              <span class="text-sm font-medium">Contraseña</span>
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                class="form-input h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+              />
+            </label>
+
+            <label class="flex flex-col flex-1 gap-2">
+              <span class="text-sm font-medium">Confirmar contraseña</span>
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                class="form-input h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+              />
+            </label>
+          </div>
+
+          
+          <label class="flex items-start gap-3 mt-2 cursor-pointer">
+            <input type="checkbox" class="h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary" />
+            <span class="text-sm text-gray-600">
+              He leído y acepto los
+              <a href="#" class="text-primary hover:underline">Términos de Servicio</a>
+              y la
+              <a href="#" class="text-primary hover:underline">Política de Privacidad</a>.
+            </span>
+          </label>
+
+          
+          <button
+            type="submit"
+            class="w-full h-12 bg-primary text-white rounded-lg text-base font-bold hover:bg-blue-700 transition"
+          >
+            Registrarse
+          </button>
+
+          <!-- Link a iniciar sesión -->
+          <p class="text-center text-sm text-gray-600">
+            ¿Ya tienes una cuenta?
+            <a href="login.html" class="text-primary hover:underline">Iniciar Sesión</a>
+          </p>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>
