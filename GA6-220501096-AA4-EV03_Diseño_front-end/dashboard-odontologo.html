@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MarmaCitas - Panel de Odontólogo</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+  <!-- Tailwind config (coincide con tu ejemplo) -->
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3B82F6",
+            "primary-light": "#EBF5FF",
+            "background-light": "#F8FAFC",
+            "background-dark": "#101a22",
+            "text-primary": "#1E293B",
+            "text-secondary": "#64748B",
+            "accent-green": "#10B981",
+            "accent-red": "#EF4444",
+          },
+          fontFamily: {
+            display: ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+ 
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    }
+  </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex h-screen">
+
+  <!-- SIDENAV -->
+  <aside class="flex flex-col w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
+    <!-- Header with profile image -->
+    <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-20">
+      <img class="w-12 h-12 rounded-full object-cover" alt="Avatar" src="https://randomuser.me/api/portraits/men/75.jpg"/>
+      <div>
+        <h1 class="text-text-primary dark:text-white text-lg font-bold">Dr. Morales</h1>
+        <p class="text-xs text-text-secondary dark:text-text-secondary">Odontología General</p>
+      </div>
+    </div>
+
+    <nav class="flex flex-col gap-2 p-4 flex-1">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-light text-primary" href="#">
+        <span class="material-symbols-outlined">dashboard</span>
+        <p class="text-sm font-medium">Inicio</p>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <p class="text-sm font-medium">Calendario</p>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
+        <span class="material-symbols-outlined">group</span>
+        <p class="text-sm font-medium">Pacientes</p>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
+        <span class="material-symbols-outlined">settings</span>
+        <p class="text-sm font-medium">Configuración</p>
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-gray-200 dark:border-gray-800">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
+        <span class="material-symbols-outlined">logout</span>
+        <p class="text-sm font-medium">Cerrar Sesión</p>
+      </a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="flex flex-col flex-1">
+    <!-- TOPBAR (sin mini calendario) -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-8 py-3 bg-white dark:bg-gray-900 h-16">
+      <div class="flex items-center gap-4 text-text-primary dark:text-white">
+        <h2 class="text-lg font-bold tracking-tight">Hola, Dr. Morales</h2>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary" title="Notificaciones">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <img class="w-9 h-9 rounded-full object-cover" src="https://randomuser.me/api/portraits/men/75.jpg" alt="Tu avatar"/>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 overflow-y-auto">
+
+      <!-- Center: Citas del día -->
+      <section class="lg:col-span-2 flex flex-col gap-6">
+        <h2 class="text-text-primary dark:text-white text-2xl font-bold">Citas para Hoy</h2>
+
+        <div class="space-y-4">
+          <!-- Confirmada -->
+          <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 w-14 h-14" style="background-image:url('https://randomuser.me/api/portraits/women/65.jpg')"></div>
+                <div>
+                  <p class="text-text-primary dark:text-white text-base font-bold">Juan Perez</p>
+                  <p class="text-text-secondary text-sm">09:00 AM — Limpieza Dental</p>
+                  <p class="text-text-secondary text-sm">Sala 2</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-accent-green">Confirmado</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-end gap-2">
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-gray-100 dark:bg-gray-800 text-text-secondary text-sm">Cancelar</button>
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary text-white text-sm">Ver Detalles</button>
+            </div>
+          </div>
+
+          <!-- Pendiente -->
+          <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 w-14 h-14" style="background-image:url('https://randomuser.me/api/portraits/men/32.jpg')"></div>
+                <div>
+                  <p class="text-text-primary dark:text-white text-base font-bold">María Rodríguez</p>
+                  <p class="text-text-secondary text-sm">10:30 AM — Revisión General</p>
+                  <p class="text-text-secondary text-sm">Sala 1</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pendiente</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-end gap-2">
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-gray-100 dark:bg-gray-800 text-text-secondary text-sm">Confirmar</button>
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary text-white text-sm">Ver Detalles</button>
+            </div>
+          </div>
+
+          <!-- Completada -->
+          <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 w-14 h-14" style="background-image:url('https://randomuser.me/api/portraits/men/12.jpg')"></div>
+                <div>
+                  <p class="text-text-primary dark:text-white text-base font-bold">Carlos Sánchez</p>
+                  <p class="text-text-secondary text-sm">12:00 PM — Blanqueamiento</p>
+                  <p class="text-text-secondary text-sm">Sala 3</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-primary">Completado</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-end gap-2">
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-gray-100 dark:bg-gray-800 text-text-secondary text-sm">Historial</button>
+              <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary text-white text-sm">Ver Detalles</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right: Panel del Paciente -->
+      <aside class="flex flex-col gap-6 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+        <div class="flex flex-col items-center gap-4">
+          <div class="w-24 h-24 bg-center bg-no-repeat bg-cover rounded-full" style="background-image:url('https://randomuser.me/api/portraits/women/65.jpg')"></div>
+          <h3 class="text-text-primary dark:text-white text-xl font-bold">María Rodríguez</h3>
+          <p class="text-text-secondary text-sm">34 años</p>
+          <p class="text-text-secondary text-sm">(555) 123-4567</p>
+        </div>
+
+        <div class="border-b border-gray-200 dark:border-gray-700">
+          <nav class="-mb-px flex space-x-6">
+            <a class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm border-primary text-primary" href="#">Notas Clínicas</a>
+            <a class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm border-transparent text-text-secondary hover:text-text-primary hover:border-gray-300" href="#">Radiografías</a>
+            <a class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm border-transparent text-text-secondary hover:text-text-primary hover:border-gray-300" href="#">Tratamientos</a>
+          </nav>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-4">
+          <h4 class="text-text-primary dark:text-white font-semibold">Historial Clínico</h4>
+          <textarea class="w-full h-40 p-3 rounded-lg border-gray-300 dark:border-gray-700 bg-background-light dark:bg-background-dark text-text-primary dark:text-white text-sm focus:ring-primary focus:border-primary" placeholder="Escriba las notas de la consulta aquí...">Paciente refiere sensibilidad en el molar superior derecho. Se observa una pequeña caries interproximal. Se recomienda obturación.</textarea>
+        </div>
+
+        <button class="w-full flex items-center justify-center rounded-lg h-11 px-6 bg-primary text-white text-base font-medium hover:bg-blue-700 transition-colors">Guardar Cambios</button>
+      </aside>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>
