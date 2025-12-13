@@ -13,30 +13,34 @@
     rel="stylesheet"
   />
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-  
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: "#3A86FF",
-            secondary: "#A8DADC",
-            accent: "#FFBE0B",
-            background: "#F8FAFC",
-            text: "#1E293B",
-          },
-          fontFamily: {
-            sans: ["Inter", "sans-serif"],
-            title: ["Poppins", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3A86FF",
+                        primaryLight: "#E0ECFF",
+                        background: "#F8FAFC",
+                        surface: "#FFFFFF",
+                        text: "#1E293B",
+                        muted: "#64748B",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        title: ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        xl: "1rem"
+                    }
+                }
+            }
+        }
+    </script>
 
 </head>
 
@@ -63,7 +67,7 @@
     <!-- Navegación  -->
     <ul class="flex flex-wrap gap-6 text-gray-700 font-medium">
       <li><a href="./index.html" class="hover:text-primary transition">Inicio</a></li>
-      <li><a href="#servicios" class="hover:text-primary transition">Servicios</a></li>
+      <li><a href="index.html#servicios" class="hover:text-primary transition">Servicios</a></li>
       <li><a href="#equipo" class="hover:text-primary transition">Nuestro equipo</a></li>
       <li><a href="#opiniones" class="hover:text-primary transition">Opiniones</a></li>
       <li><a href="#sobre-nosotros" class="hover:text-primary transition">Acerca de nosotros</a></li>

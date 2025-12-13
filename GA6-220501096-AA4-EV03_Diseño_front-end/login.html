@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,28 +7,33 @@
 
   
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-  
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: "#3A86FF",
-            secondary: "#A8DADC",
-            accent: "#FFBE0B",
-            background: "#F8FAFC",
-            text: "#1E293B",
-          },
-          fontFamily: {
-            sans: ["Inter", "sans-serif"],
-            title: ["Poppins", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3A86FF",
+                        primaryLight: "#E0ECFF",
+                        background: "#F8FAFC",
+                        surface: "#FFFFFF",
+                        text: "#1E293B",
+                        muted: "#64748B",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        title: ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        xl: "1rem"
+                    }
+                }
+            }
+        }
+    </script>
 
   
   <link rel="preconnect" href="https://fonts.googleapis.com"/>

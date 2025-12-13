@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MarmaCitas</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -14,19 +14,27 @@
                 extend: {
                     colors: {
                         primary: "#3A86FF",
-                        secondary: "#A8DADC",
-                        accent: "#FFBE0B",
+                        primaryLight: "#E0ECFF",
                         background: "#F8FAFC",
+                        surface: "#FFFFFF",
                         text: "#1E293B",
+                        muted: "#64748B",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444"
                     },
                     fontFamily: {
                         sans: ["Inter", "sans-serif"],
-                        title: ["Poppins", "sans-serif"],
+                        title: ["Poppins", "sans-serif"]
                     },
-                },
-            },
-        };
+                    borderRadius: {
+                        xl: "1rem"
+                    }
+                }
+            }
+        }
     </script>
+
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap"
         rel="stylesheet" />
@@ -51,7 +59,7 @@
                 <li><a href="#servicios" class="hover:text-primary transition">Servicios</a></li>
                 <li><a href="#equipo" class="hover:text-primary transition">Nuestro equipo</a></li>
                 <li><a href="#opiniones" class="hover:text-primary transition">Opiniones</a></li>
-                <li><a href="#sobre-nosotros" class="hover:text-primary transition">Acerca de nostros</a></li>
+                <li><a href="#sobre-nosotros" class="hover:text-primary transition">Acerca de nosotros</a></li>
 
             </ul>
 
@@ -233,7 +241,8 @@
             <h2 class="text-3xl md:text-4xl font-title font-bold text-primary mb-4">Lo que nuestros pacientes dicen</h2>
             <p class="text-text max-w-2xl mx-auto">
                 La satisfacción de nuestros pacientes es nuestra mayor recompensa. En
-                <strong class="font-semibold text-primary">MarmaCitas</strong> trabajamos cada día para brindar un servicio
+                <strong class="font-semibold text-primary">MarmaCitas</strong> trabajamos cada día para brindar un
+                servicio
                 humano,
                 puntual y de calidad.
             </p>
@@ -298,7 +307,8 @@
             <div>
                 <h2 class="text-3xl md:text-4xl font-title font-bold text-primary mb-4">Sobre nuestro consultorio</h2>
                 <p class="text-text mb-4">
-                    En <strong class="font-semibold text-primary">MarmaCitas</strong> creemos que la salud bucal es parte
+                    En <strong class="font-semibold text-primary">MarmaCitas</strong> creemos que la salud bucal es
+                    parte
                     esencial del bienestar general.
                     Somos un consultorio odontológico comprometido con ofrecer atención profesional, cálida y humana,
                     respaldada por tecnología moderna y un equipo altamente capacitado.
@@ -316,58 +326,58 @@
         </div>
     </section>
 
-<!--FOOTER-->
+    <!--FOOTER-->
 
-<footer class="bg-gray-900 text-gray-300 py-10">
-  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8">
-    
-    <div>
-      <h3 class="text-2xl font-bold text-white mb-3">MarmaCitas</h3>
-      <p class="text-sm leading-relaxed">
-        Tu consultorio odontológico de confianza.  
-        Agenda tus citas en línea, recibe recordatorios automáticos  
-        y disfruta una experiencia ágil y profesional.
-      </p>
-    </div>
+    <footer class="bg-gray-900 text-gray-300 py-10">
+        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8">
 
-    
-    <div>
-      <h4 class="text-lg font-semibold text-white mb-3">Enlaces rápidos</h4>
-      <ul class="space-y-2">
-        <li><a href="#inicio" class="hover:text-secondary">Inicio</a></li>
-          <li><a href="#servicios" class="hover:text-secondary">Servicios</a></li>
-          <li><a href="#equipo" class="hover:text-secondary">Nuestro equipo</a></li>
-          <li><a href="#opiniones" class="hover:text-secondary">Opiniones</a></li>
-          <li><a href="#sobre-nosotros" class="hover:text-secondary">Acerca de nosotros</a></li>
-      </ul>
-    </div>
+            <div>
+                <h3 class="text-2xl font-bold text-white mb-3">MarmaCitas</h3>
+                <p class="text-sm leading-relaxed">
+                    Tu consultorio odontológico de confianza.
+                    Agenda tus citas en línea, recibe recordatorios automáticos
+                    y disfruta una experiencia ágil y profesional.
+                </p>
+            </div>
 
-    
-    <div>
-      <h4 class="text-lg font-semibold text-white mb-3">Contáctanos</h4>
-      <ul class="space-y-2">
-        <li>📍 Calle 100 #12-45, Cali, Valle del Cauca</li>
-        <li>📞 (608) 635 4567</li>
-        <li>📱 +57 310 234 5678</li>
-        <li>✉️ contacto@marmaCitas.com</li>
-      </ul>
-    </div>
 
-    
-    <div>
-      <h4 class="text-lg font-semibold text-white mb-3">Síguenos</h4>
-      <div class="flex space-x-4">
-        <a href="#" class="hover:text-secondary">🌐 Facebook</a>
-        <a href="#" class="hover:text-secondary">📷 Instagram</a>
-        <a href="#" class="hover:text-secondary">💬 WhatsApp</a>
-      </div>
-    </div>
-  </div>
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-3">Enlaces rápidos</h4>
+                <ul class="space-y-2">
+                    <li><a href="#inicio" class="hover:text-secondary">Inicio</a></li>
+                    <li><a href="#servicios" class="hover:text-secondary">Servicios</a></li>
+                    <li><a href="#equipo" class="hover:text-secondary">Nuestro equipo</a></li>
+                    <li><a href="#opiniones" class="hover:text-secondary">Opiniones</a></li>
+                    <li><a href="#sobre-nosotros" class="hover:text-secondary">Acerca de nosotros</a></li>
+                </ul>
+            </div>
 
-  <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm">
-    © 2025 MarmaCitas. Todos los derechos reservados.
-  </div>
-</footer>
+
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-3">Contáctanos</h4>
+                <ul class="space-y-2">
+                    <li>📍 Calle 100 #12-45, Cali, Valle del Cauca</li>
+                    <li>📞 (608) 635 4567</li>
+                    <li>📱 +57 310 234 5678</li>
+                    <li>✉️ contacto@marmaCitas.com</li>
+                </ul>
+            </div>
+
+
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-3">Síguenos</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-secondary">🌐 Facebook</a>
+                    <a href="#" class="hover:text-secondary">📷 Instagram</a>
+                    <a href="#" class="hover:text-secondary">💬 WhatsApp</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm">
+            © 2025 MarmaCitas. Todos los derechos reservados.
+        </div>
+    </footer>
 
 
 </body>

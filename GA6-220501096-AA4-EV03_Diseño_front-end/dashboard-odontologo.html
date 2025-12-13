@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MarmaCitas - Panel de Odontólogo</title>
+  <title>MarmaCitas - Odontólogos</title>
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -15,34 +15,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
   <!-- Tailwind config (coincide con tu ejemplo) -->
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#3B82F6",
-            "primary-light": "#EBF5FF",
-            "background-light": "#F8FAFC",
-            "background-dark": "#101a22",
-            "text-primary": "#1E293B",
-            "text-secondary": "#64748B",
-            "accent-green": "#10B981",
-            "accent-red": "#EF4444",
-          },
-          fontFamily: {
-            display: ["Inter", "sans-serif"]
-          },
-          borderRadius: {
-            "DEFAULT": "0.5rem",
-            "lg": "0.75rem",
-            "xl": "1rem",
-            "full": "9999px"
-          },
-        },
-      },
-    }
-  </script>
+   
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3A86FF",
+                        primaryLight: "#E0ECFF",
+                        background: "#F8FAFC",
+                        surface: "#FFFFFF",
+                        text: "#1E293B",
+                        muted: "#64748B",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        title: ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        xl: "1rem"
+                    }
+                }
+            }
+        }
+    </script>
  
   <style>
     .material-symbols-outlined {
@@ -55,68 +55,73 @@
   </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display">
-<div class="flex h-screen">
+<body class="bg-background font-sans text-text">
+<div class="flex min-h-screen">
 
   <!-- SIDENAV -->
-  <aside class="flex flex-col w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
-    <!-- Header with profile image -->
-    <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-20">
-      <img class="w-12 h-12 rounded-full object-cover" alt="Avatar" src="https://randomuser.me/api/portraits/men/75.jpg"/>
-      <div>
-        <h1 class="text-text-primary dark:text-white text-lg font-bold">Dr. Morales</h1>
-        <p class="text-xs text-text-secondary dark:text-text-secondary">Odontología General</p>
+  <aside class="w-60 bg-white shadow-md p-6 flex flex-col">
+      <div class="flex items-center gap-3 mb-10">
+          <img src="./images/dental-care.png" class="w-10 h-10" />
+          <h1 class="font-title text-xl text-primary font-bold">MarmaCitas</h1>
       </div>
-    </div>
 
-    <nav class="flex flex-col gap-2 p-4 flex-1">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-light text-primary" href="#">
-        <span class="material-symbols-outlined">dashboard</span>
-        <p class="text-sm font-medium">Inicio</p>
-      </a>
+      <nav class="flex flex-col gap-2 flex-1">
+          <a class="flex items-center gap-3 p-2 rounded-lg bg-primary/20 text-primary font-medium" href="#">
+              <span class="material-symbols-outlined">dashboard</span>
+              Inicio
+          </a>
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">calendar_month</span>
+              Agendar Cita
+          </a>
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">event_note</span>
+              Mis Citas
+          </a>
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">history</span>
+              Historial
+          </a>
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">health_and_safety</span>
+              Mi Odontólogo
+          </a>
+      </nav>
 
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
-        <span class="material-symbols-outlined">calendar_month</span>
-        <p class="text-sm font-medium">Calendario</p>
-      </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
-        <span class="material-symbols-outlined">group</span>
-        <p class="text-sm font-medium">Pacientes</p>
-      </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
-        <span class="material-symbols-outlined">settings</span>
-        <p class="text-sm font-medium">Configuración</p>
-      </a>
-    </nav>
-
-    <div class="p-4 border-t border-gray-200 dark:border-gray-800">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800" href="#">
-        <span class="material-symbols-outlined">logout</span>
-        <p class="text-sm font-medium">Cerrar Sesión</p>
-      </a>
-    </div>
+      <div class="mt-auto flex flex-col gap-2">
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">help</span>
+              Ayuda
+          </a>
+          <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100" href="#">
+              <span class="material-symbols-outlined">logout</span>
+              Cerrar Sesión
+          </a>
+      </div>
   </aside>
 
   <!-- CONTENT -->
   <div class="flex flex-col flex-1">
-    <!-- TOPBAR (sin mini calendario) -->
-    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-8 py-3 bg-white dark:bg-gray-900 h-16">
-      <div class="flex items-center gap-4 text-text-primary dark:text-white">
-        <h2 class="text-lg font-bold tracking-tight">Hola, Dr. Morales</h2>
-      </div>
 
-      <div class="flex items-center gap-4">
-        <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-text-secondary" title="Notificaciones">
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
+   <!-- NAV SUPERIOR -->
+      <header class="flex justify-end items-center bg-white shadow px-8 py-4 border-b">
+          <div class="flex items-center gap-4">
+              <button class="rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100">
+                  <span class="material-symbols-outlined">notifications</span>
+              </button>
 
-        <div class="flex items-center gap-2">
-          <img class="w-9 h-9 rounded-full object-cover" src="https://randomuser.me/api/portraits/men/75.jpg" alt="Tu avatar"/>
-        </div>
-      </div>
-    </header>
+              <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-cover bg-center"
+                      style='background-image: url("https://randomuser.me/api/portraits/men/71.jpg")'>
+                  </div>
+
+                  <div class="text-right">
+                      <p class="font-semibold">Carlos Blanco</p>
+                      <p class="text-sm text-gray-500">Odontólogo</p>
+                  </div>
+              </div>
+          </div>
+      </header>
 
     <!-- MAIN -->
     <main class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 overflow-y-auto">
