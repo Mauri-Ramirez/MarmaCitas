@@ -22,6 +22,7 @@ import DoctorLayout from "../layouts/DoctorLayout";
 import ReceptionLayout from "../layouts/ReceptionLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import PublicLayout from "../layouts/PublicLayout";
+import PrivateRoute from "./PrivateRoute";
 
 
 function AppRouter(){
@@ -59,13 +60,11 @@ element={<Register/>}
 <Route
 path="/paciente"
 element={
-
-<PatientLayout>
-
-<PatientDashboard/>
-
-</PatientLayout>
-
+<PrivateRoute allowedRoles={["patient"]}>
+  <PatientLayout>
+    <PatientDashboard/>
+  </PatientLayout>
+</PrivateRoute>
 }
 />
 
@@ -75,29 +74,24 @@ element={
 <Route
 path="/odontologo"
 element={
-
-<DoctorLayout>
-
-<DoctorDashboard/>
-
-</DoctorLayout>
-
+<PrivateRoute allowedRoles={["doctor"]}>
+  <DoctorLayout>
+    <DoctorDashboard/>
+  </DoctorLayout>
+</PrivateRoute>
 }
 />
-
 
 
 
 <Route
 path="/recepcion"
 element={
-
-<ReceptionLayout>
-
-<ReceptionDashboard/>
-
-</ReceptionLayout>
-
+<PrivateRoute allowedRoles={["receptionist"]}>
+  <ReceptionLayout>
+    <ReceptionDashboard/>
+  </ReceptionLayout>
+</PrivateRoute>
 }
 />
 
@@ -107,15 +101,15 @@ element={
 <Route
 path="/admin"
 element={
-
-<AdminLayout>
-
-<AdminDashboard/>
-
-</AdminLayout>
-
+<PrivateRoute allowedRoles={["admin"]}>
+  <AdminLayout>
+    <AdminDashboard/>
+  </AdminLayout>
+</PrivateRoute>
 }
 />
+
+
 
 
 </Routes>
