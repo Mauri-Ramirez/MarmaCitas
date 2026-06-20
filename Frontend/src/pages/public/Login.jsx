@@ -1,58 +1,54 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
-
 import { AuthContext } from "../../context/AuthContext";
+
+import { loginRequest } from "../../services/authService";
 
 
 function Login(){
 
 const { login } = useContext(AuthContext);
-
 const navigate = useNavigate();
 
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 
 
-const handleSubmit = (e) => {
-e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  try {
 
-// Simulación de usuario (luego será backend)
-let userData = null;
+    const data = await loginRequest({
+      email,
+      password
+    });
 
-if(email === "paciente@test.com"){
-userData = { role:"patient", name:"Paciente" };
-navigate("/paciente");
-}
+    // Guardar usuario en contexto
+    login(data.user);
 
-else if(email === "doctor@test.com"){
-userData = { role:"doctor", name:"Doctor" };
-navigate("/odontologo");
-}
+    // Guardar token
+    localStorage.setItem("token", data.token);
 
-else if(email === "recepcion@test.com"){
-userData = { role:"receptionist", name:"Recepción" };
-navigate("/recepcion");
-}
+    // Redirección por rol
+    if(data.user.role === "patient"){
+      navigate("/paciente");
+    }
+    else if(data.user.role === "doctor"){
+      navigate("/odontologo");
+    }
+    else if(data.user.role === "receptionist"){
+      navigate("/recepcion");
+    }
+    else if(data.user.role === "admin"){
+      navigate("/admin");
+    }
 
-else if(email === "admin@test.com"){
-userData = { role:"admin", name:"Admin" };
-navigate("/admin");
-}
-
-else{
-alert("Usuario no válido");
-return;
-}
-
-
-// Guardar en contexto
-login(userData);
-
+  } catch (error) {
+    alert(error.response?.data?.message || "Error en login");
+  }
 };
 
 
@@ -65,7 +61,6 @@ return(
 <h2 className="text-2xl font-bold text-center text-primary mb-6">
 Iniciar sesión
 </h2>
-
 
 <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -89,13 +84,11 @@ className="w-full border px-4 py-2 rounded-lg"
 />
 </div>
 
-
 <Button type="submit">
 Ingresar
 </Button>
 
 </form>
-
 
 <p className="text-sm text-center mt-4">
 ¿No tienes cuenta?
@@ -104,9 +97,7 @@ Ingresar
 </a>
 </p>
 
-
 </div>
-
 </div>
 
 )
