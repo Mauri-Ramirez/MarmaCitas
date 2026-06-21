@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MarmaCitas - Usuarios</title>
+
+    <!-- Tailwind CDN con config -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3A86FF",
+                        primaryLight: "#E0ECFF",
+                        background: "#F8FAFC",
+                        surface: "#FFFFFF",
+                        text: "#1E293B",
+                        muted: "#64748B",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        title: ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        xl: "1rem"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-sans text-text">
+
+    <div class="flex min-h-screen">
+
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="flex items-center gap-3 px-6 py-5 border-b">
+                <img src="./images/dental-care.png" alt="Logo MarmaCitas" class="w-10 h-10">
+                <h1 class="font-title text-xl font-bold text-primary">MarmaCitas</h1>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-2 text-sm font-medium text-muted">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primaryLight text-primary">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Inicio
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    Agendar Cita
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">event_note</span>
+                    Mis Citas
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">history</span>
+                    Historial
+                </a>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">health_and_safety</span>
+                    Mi Odontólogo
+                </a>
+            </nav>
+
+            <div class="px-4 py-4 border-t">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-muted hover:bg-gray-100">
+                    <span class="material-symbols-outlined">logout</span>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="flex-1">
+
+            <!-- TOPBAR -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6">
+                <div class="flex items-center gap-4">
+                    <button aria-label="Notificaciones" class="relative p-2 rounded-full hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-muted">notifications</span>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                    </button>
+
+                    <div class="flex items-center gap-3">
+                        <img src="https://randomuser.me/api/portraits/women/70.jpg"
+                            class="w-9 h-9 rounded-full object-cover" alt="Avatar usuario">
+                        <div class="text-right leading-tight hidden sm:block">
+                            <p class="text-sm font-semibold">Ana García</p>
+                            <p class="text-xs text-muted">Paciente</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <div class="p-8">
+
+                <!-- SALUDO -->
+                <div class="mb-8">
+                    <h2 class="text-3xl font-title font-bold">¡Hola, Ana!</h2>
+                    <p class="text-muted">Aquí tienes un resumen de tu actividad.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    <!-- IZQUIERDA -->
+                    <div class="lg:col-span-2">
+
+                        <!-- Próxima cita -->
+                        <section>
+                            <h3 class="text-xl font-title font-bold mb-4">Próxima Cita</h3>
+                            <div class="bg-white rounded-xl shadow border p-6">
+                                <p class="text-primary font-semibold mb-1">Lunes, 28 de Octubre · 10:30 AM</p>
+                                <h4 class="text-lg font-bold">Limpieza Dental</h4>
+                                <p class="text-sm text-muted mt-1">con Dr. Juan Pérez</p>
+
+                                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        class="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700">
+                                        Ver detalles
+                                    </button>
+                                    <button
+                                        class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200">
+                                        Cancelar cita
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Historial -->
+                        <section class="mt-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-title font-bold">Historial Reciente</h3>
+                                <a href="#" class="text-sm font-medium text-primary hover:underline">Ver todo</a>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <p class="font-semibold">Revisión General</p>
+                                    <p class="text-sm text-muted mt-1">15 Septiembre 2024</p>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <p class="font-semibold">Blanqueamiento</p>
+                                    <p class="text-sm text-muted mt-1">02 Junio 2024</p>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <p class="font-semibold">Ortodoncia</p>
+                                    <p class="text-sm text-muted mt-1">10 Marzo 2024</p>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <p class="font-semibold">Extracción Muela</p>
+                                    <p class="text-sm text-muted mt-1">20 Enero 2024</p>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <!-- ASIDE -->
+                    <aside>
+                        <h3 class="text-xl font-title font-bold mb-4">Tu Odontólogo</h3>
+                        <div class="bg-white p-6 rounded-xl shadow text-center">
+                            <div class="w-24 h-24 rounded-full bg-cover bg-center mx-auto"
+                                style='background-image:url("https://randomuser.me/api/portraits/men/32.jpg")'></div>
+
+                            <p class="font-bold text-lg mt-4">Dr. Juan Pérez</p>
+                            <p class="text-muted">Odontología General</p>
+
+                            <button
+                                class="mt-4 bg-primary/20 text-primary w-full py-2 rounded-lg flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">person</span>
+                                Ver Perfil
+                            </button>
+                        </div>
+                    </aside>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>
