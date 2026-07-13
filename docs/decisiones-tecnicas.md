@@ -79,3 +79,43 @@ Cada funcionalidad se desarrolla en una rama independiente antes de integrarse.
 - Refresh Tokens.
 - Recuperación de contraseña.
 - Cookies httpOnly.
+
+# Mini Sprint 2.1 - Specialty
+
+## Decisiones de arquitectura
+
+### Soft Delete
+
+Las especialidades no se eliminan físicamente.
+
+Se utiliza:
+
+active = false
+
+Esto conserva la integridad histórica de las citas, servicios y reportes.
+
+---
+
+### Seguridad
+
+Las operaciones de escritura sobre Specialties son exclusivas del Administrador.
+
+Las operaciones de lectura están disponibles para cualquier usuario autenticado.
+
+---
+
+### Validaciones
+
+- name único.
+- trim.
+- timestamps automáticos.
+- runValidators en actualizaciones.
+
+---
+
+### Mejoras futuras
+
+- Endpoint Restore.
+- Middleware global de errores.
+- Respuestas de error más amigables.
+- Colección oficial de Postman.
