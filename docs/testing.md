@@ -30,3 +30,33 @@ Todos los casos de prueba fueron satisfactorios.
 Estado del Sprint:
 
 ✅ APROBADO
+
+# Mini Sprint 2.1 - Specialty
+
+## Estado
+
+Finalizado
+
+## Resultado
+
+8 de 8 pruebas aprobadas.
+
+## Casos de prueba
+
+| ID     | Caso                   | Resultado |
+| ------ | ---------------------- | --------- |
+| SP-001 | Crear especialidad     | ✅        |
+| SP-002 | Especialidad duplicada | ✅        |
+| SP-003 | Listar especialidades  | ✅        |
+| SP-004 | Obtener por ID         | ✅        |
+| SP-005 | Actualizar             | ✅        |
+| SP-006 | Soft Delete            | ✅        |
+| SP-007 | No listar desactivadas | ✅        |
+| SP-008 | Seguridad              | ✅        |
+
+## Observaciones
+
+- Se implementó correctamente Soft Delete.
+- Se validó la restricción unique.
+- Se comprobó JWT.
+- Se comprobó autorización por roles.
