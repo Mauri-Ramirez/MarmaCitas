@@ -119,3 +119,50 @@ Las operaciones de lectura están disponibles para cualquier usuario autenticado
 - Middleware global de errores.
 - Respuestas de error más amigables.
 - Colección oficial de Postman.
+
+# Mini Sprint 2.2 - Service
+
+## Decisiones de arquitectura
+
+### Relaciones
+
+Service pertenece obligatoriamente a una Specialty.
+
+La relación se implementó mediante ObjectId y populate().
+
+---
+
+### Integridad
+
+Antes de crear o actualizar un servicio:
+
+- La especialidad debe existir.
+- La especialidad debe estar activa.
+
+---
+
+### Unicidad
+
+El nombre del servicio puede repetirse únicamente cuando pertenece a una especialidad distinta.
+
+Actualmente la validación se realiza desde el Controller.
+
+Como mejora futura se implementará un índice compuesto (name + specialty).
+
+---
+
+### Soft Delete
+
+Los servicios nunca se eliminan físicamente.
+
+Se utiliza:
+
+active = false
+
+---
+
+### Seguridad
+
+Las operaciones de escritura son exclusivas del Administrador.
+
+Las operaciones de lectura están disponibles para cualquier usuario autenticado.

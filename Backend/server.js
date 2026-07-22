@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import specialtyRoutes from "./routes/specialtyRoutes.js";
+import serviceRoutes from "./routes/serviceRoutes.js";
 
 dotenv.config(); // PRIMERO
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes); //PUBLICO
 app.use("/api/user", userRoutes); //PROTEGIDO
 app.use("/api/specialties", specialtyRoutes); //Especialidades
+app.use("/api/services", serviceRoutes); //Servicios
 
 app.get("/", (req, res) => {
   res.send("API MarmaCitas funcionando correctamente");
