@@ -60,3 +60,37 @@ Finalizado
 - Se validó la restricción unique.
 - Se comprobó JWT.
 - Se comprobó autorización por roles.
+
+# Mini Sprint 2.2 - Service
+
+## Estado
+
+Finalizado
+
+## Resultado
+
+11 de 11 pruebas aprobadas.
+
+## Casos de prueba
+
+| ID      | Caso                          | Resultado |
+| ------- | ----------------------------- | --------- |
+| PRE-001 | Preparación del entorno       | ✅        |
+| SV-001  | Crear servicio                | ✅        |
+| SV-002  | Especialidad inexistente      | ✅        |
+| SV-003  | Especialidad inactiva         | ✅        |
+| SV-004  | Duplicado                     | ✅        |
+| SV-005  | Listar                        | ✅        |
+| SV-006  | Obtener por ID                | ✅        |
+| SV-007  | Actualizar                    | ✅        |
+| SV-008  | Soft Delete                   | ✅        |
+| SV-009  | No listar servicios inactivos | ✅        |
+| SV-010  | Seguridad                     | ✅        |
+
+## Observaciones
+
+- Se implementó la relación entre Service y Specialty.
+- Se utilizó populate() para obtener la información de la especialidad.
+- Se validó la existencia y estado de la especialidad antes de crear servicios.
+- Se implementó Soft Delete.
+- Se verificó autorización mediante JWT y Roles.
