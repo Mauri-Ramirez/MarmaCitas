@@ -41,27 +41,56 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // ============================================
+    // Buscar usuario
+    // ============================================
+
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Usuario no encontrado" });
+      return res.status(400).json({
+        message: "Usuario no encontrado",
+      });
     }
 
-    // Comparar contraseña
+    // ============================================
+    // Validar usuario activo
+    // ============================================
+
+    if (!user.active) {
+      return res.status(403).json({
+        message: "El usuario se encuentra inactivo.",
+      });
+    }
+
+    // ============================================
+    // Validar contraseña
+    // ============================================
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Contraseña incorrecta" });
+      return res.status(400).json({
+        message: "Contraseña incorrecta",
+      });
     }
 
-    // Crear token
+    // ============================================
+    // Generar JWT
+    // ============================================
+
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      {
+        id: user._id,
+        role: user.role,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      {
+        expiresIn: "1d",
+      },
     );
 
-    res.json({
+    res.status(200).json({
       token,
       user: {
         id: user._id,
@@ -70,6 +99,8 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
