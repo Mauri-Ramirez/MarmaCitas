@@ -2,330 +2,217 @@
 
 ## Objetivo
 
-Definir las entidades principales del sistema, sus responsabilidades y sus relaciones antes de implementar los modelos en MongoDB.
+Representar las entidades principales del sistema y las relaciones existentes entre ellas desde el punto de vista del negocio.
 
 ---
 
-# Principios de Diseño
-
-- Cada entidad representa un concepto del negocio.
-- Una entidad tiene una única responsabilidad.
-- Se evita la duplicación innecesaria de información.
-- Se prioriza la trazabilidad.
-- El sistema debe ser escalable.
-
----
-
-# Entidades
+# Entidades del dominio
 
 ## User
 
-Representa cualquier usuario del sistema.
+Representa a todas las personas que interactúan con el sistema.
 
-Roles:
+Dependiendo de su rol, un usuario puede ser:
 
-- patient
-- doctor
-- receptionist
-- admin
+- Administrador
+- Recepcionista
+- Odontólogo
+- Paciente
 
-Responsabilidades:
+### Atributos principales
 
-- Autenticación.
-- Autorización.
-- Acceso al sistema según su rol.
+- Nombre
+- Correo electrónico
+- Contraseña
+- Rol
+- Estado (activo/inactivo)
+
+### Información profesional (solo para odontólogos)
+
+- Tarjeta profesional
+- Teléfono de contacto
+- Especialidad
 
 ---
 
 ## Specialty
 
-Representa una especialidad odontológica.
+Representa las especialidades odontológicas ofrecidas por el consultorio.
 
 Ejemplos:
 
-- Odontología General
 - Ortodoncia
 - Endodoncia
 - Periodoncia
-- Cirugía Oral
-- Odontopediatría
-- Estética Dental
-
-Responsabilidades:
-
-- Agrupar odontólogos.
-- Agrupar servicios.
-- Facilitar búsquedas.
+- Odontología General
 
 ---
 
 ## Service
 
-Representa un servicio odontológico.
+Representa los tratamientos o procedimientos que ofrece el consultorio.
+
+Cada servicio pertenece obligatoriamente a una especialidad.
 
 Ejemplos:
 
-- Limpieza Dental
-- Resina
 - Valoración
-- Instalación de brackets
-
-Responsabilidades:
-
-- Definir precio.
-- Definir duración.
-- Asociarse a una especialidad.
-- Poder ser reservado.
+- Limpieza Dental
+- Blanqueamiento Dental
 
 ---
 
-## Schedule
+## Appointment (Futuro)
 
-Representa el horario laboral de un odontólogo.
+Representará una cita odontológica.
 
-Responsabilidades:
+Relacionará:
 
-- Definir disponibilidad.
-- Evitar conflictos de agenda.
-
----
-
-## Appointment
-
-Entidad central del sistema.
-
-Responsabilidades:
-
-- Relacionar paciente y odontólogo.
-- Asociar un servicio.
-- Registrar fecha y hora.
-- Controlar el estado de la cita.
-- Conservar la información histórica del servicio.
+- Paciente
+- Odontólogo
+- Servicio
+- Fecha
+- Hora
+- Estado
 
 ---
 
-## ClinicalRecord
+## Schedule (Futuro)
 
-Representa el historial clínico generado durante una atención.
+Representará la disponibilidad de cada odontólogo.
 
-Responsabilidades:
+Permitirá definir:
 
-- Diagnóstico.
-- Tratamiento.
-- Observaciones.
-
-Solo existe cuando una cita ha sido atendida.
+- Días laborales
+- Horarios
+- Bloques disponibles
 
 ---
 
-## Payment
+# Relaciones del dominio
 
-Representa el pago asociado a una cita.
+## User (Doctor) → Specialty
 
-Responsabilidades:
+Relación:
 
-- Registrar pagos.
-- Registrar método de pago.
-- Registrar estado del pago.
+Uno a Uno (1:1)
 
-Es independiente de Appointment.
+Todo odontólogo pertenece a una única especialidad.
 
 ---
 
-# Relaciones
+## Specialty → Service
 
-User (Paciente)
+Relación:
 
-1
+Uno a Muchos (1:N)
 
-↓
+Una especialidad puede ofrecer múltiples servicios.
 
-N
-
-Appointment
+Cada servicio pertenece únicamente a una especialidad.
 
 ---
 
-User (Odontólogo)
+## User (Doctor) → Schedule (Futuro)
 
-1
+Relación:
 
-↓
+Uno a Muchos (1:N)
 
-N
-
-Appointment
+Un odontólogo podrá tener múltiples horarios registrados.
 
 ---
 
-Specialty
+## User (Doctor) → Appointment (Futuro)
 
-1
+Relación:
 
-↓
+Uno a Muchos (1:N)
 
-N
-
-Doctor
+Un odontólogo podrá atender múltiples citas.
 
 ---
 
-Specialty
+## User (Patient) → Appointment (Futuro)
 
-1
+Relación:
 
-↓
+Uno a Muchos (1:N)
 
-N
-
-Service
+Un paciente podrá registrar múltiples citas.
 
 ---
 
-Service
+## Service → Appointment (Futuro)
 
-1
+Relación:
 
-↓
+Uno a Muchos (1:N)
 
-N
-
-Appointment
+Un servicio podrá estar asociado a múltiples citas.
 
 ---
 
-Appointment
+# Modelo conceptual
 
-1
-
-↓
-
-0..1
-
-Payment
-
----
-
-Appointment
-
-1
-
-↓
-
-0..1
-
-ClinicalRecord
-
----
-
-Doctor
-
-1
-
-↓
-
-N
-
-Schedule
-
----
-
-# Flujo de Reserva
-
-Paciente
-
-↓
-
-Selecciona Servicio
-
-↓
-
-El sistema identifica la especialidad
-
-↓
-
-Obtiene los odontólogos de esa especialidad
-
-↓
-
-Consulta la disponibilidad
-
-↓
-
-Paciente selecciona horario
-
-↓
-
-Se crea la cita
-
-↓
-
-Estado: Confirmada
+```text
+                        User
+        ┌─────────────────────────────────┐
+        │ name                            │
+        │ email                           │
+        │ password                        │
+        │ role                            │
+        │ active                          │
+        │---------------------------------│
+        │ professionalLicense (Doctor)    │
+        │ phone (Doctor)                  │
+        │ specialty (Doctor)              │
+        └─────────────────────────────────┘
+                      │
+          ┌───────────┴────────────┐
+          │                        │
+     (Paciente)              (Odontólogo)
+          │                        │
+          │                        │
+          │                  pertenece a
+          │                        │
+          │                        ▼
+          │                 ┌──────────────┐
+          │                 │  Specialty   │
+          │                 └──────────────┘
+          │                        │
+          │                  tiene muchos
+          │                        │
+          ▼                        ▼
+                 ┌───────────────────────┐
+                 │       Service         │
+                 └───────────────────────┘
+                          │
+                          │
+                    (Futuro)
+                          │
+                          ▼
+                 ┌───────────────────────┐
+                 │     Appointment       │
+                 └───────────────────────┘
+```
 
 ---
 
-# Entidad Central
+# Estado actual del dominio
 
-Appointment es el núcleo del sistema.
+## Implementado
 
-Todas las entidades colaboran con ella.
+- User
+- Specialty
+- Service
+- Autenticación
+- Roles
 
----
+## Pendiente
 
-# Diagrama Conceptual
-
-                   Specialty
-                  /         \
-                 /           \
-          Doctor             Service
-               \             /
-                \           /
-                Appointment
-              /      |       \
-             /       |        \
-      Payment  ClinicalRecord
-             \
-           (Opcional)
-
-Doctor
-│
-▼
-Schedule
-
----
-
-# Decisiones de Arquitectura
-
-- Se utiliza una única entidad User para todos los tipos de usuario.
-- Cada odontólogo pertenece a una única especialidad.
-- Cada servicio pertenece a una única especialidad.
-- El paciente nunca selecciona una especialidad manualmente; el sistema la deduce a partir del servicio.
-- Appointment es la entidad central del sistema.
-- Payment será un módulo independiente.
-- ClinicalRecord solo existirá cuando una cita haya sido completada.
-- Cada cita almacenará un snapshot del servicio para preservar el historial.
-- Schedule será responsable de calcular la disponibilidad del odontólogo.
-
----
-
-# Backlog Arquitectónico
-
-Pendientes por definir:
-
-- Modelo de horarios (Schedule).
-- Vacaciones e incapacidades.
-- Días festivos.
-- Bloqueo manual de horarios.
-- Agenda semanal del odontólogo.
-- Horarios especiales.
-
----
-
-# Futuras Entidades
-
-- Notification
-- Prescription
-- Invoice
-- Inventory
-- LaboratoryOrder
-- AuditLog
+- Doctor (ampliación del modelo User)
+- Schedule
+- Appointment
+- Payment
+- Clinical Record
