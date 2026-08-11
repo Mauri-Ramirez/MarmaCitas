@@ -208,11 +208,49 @@ Un servicio podrá estar asociado a múltiples citas.
 - Service
 - Autenticación
 - Roles
+- Schedule
+
+# Entidad: Schedule (Horario)
+
+Representa el horario laboral asignado a un odontólogo del consultorio.
+
+Cada odontólogo puede tener únicamente un horario activo, el cual define su jornada de atención durante los días laborales del consultorio.
+
+---
+
+## Atributos
+
+| Atributo  | Tipo    | Descripción                                 |
+| --------- | ------- | ------------------------------------------- |
+| doctor    | User    | Odontólogo al que pertenece el horario.     |
+| startTime | String  | Hora de inicio de la jornada laboral.       |
+| endTime   | String  | Hora de finalización de la jornada laboral. |
+| active    | Boolean | Indica si el horario se encuentra activo.   |
+
+---
+
+## Relaciones
+
+### User (Doctor) 1 ----- 1 Schedule
+
+Un odontólogo posee un único horario activo.
+
+Un horario pertenece únicamente a un odontólogo.
+
+---
+
+## Restricciones
+
+- Solo puede asignarse un horario a usuarios con rol **doctor**.
+- El odontólogo debe encontrarse activo.
+- No pueden existir dos horarios activos para el mismo odontólogo.
+- La hora de inicio debe ser menor que la hora de finalización.
+- Los horarios representan la jornada laboral del consultorio de lunes a viernes.
+- Los horarios utilizan eliminación lógica (Soft Delete).
 
 ## Pendiente
 
 - Doctor (ampliación del modelo User)
-- Schedule
 - Appointment
 - Payment
 - Clinical Record
