@@ -8,6 +8,7 @@ import specialtyRoutes from "./routes/specialtyRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
+import appointmentRoutes from "./routes/appointmentRoutes.js";
 
 dotenv.config(); // PRIMERO
 
@@ -22,11 +23,12 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes); //PUBLICO
-app.use("/api/user", userRoutes); //PROTEGIDO
+app.use("/api/users", userRoutes); //PROTEGIDO
 app.use("/api/specialties", specialtyRoutes); //Especialidades
 app.use("/api/services", serviceRoutes); //Servicios
 app.use("/api/doctors", doctorRoutes); //Doctores
 app.use("/api/schedules", scheduleRoutes); //Horarios
+app.use("/api/appointments", appointmentRoutes); //Citas
 
 app.get("/", (req, res) => {
   res.send("API MarmaCitas funcionando correctamente");

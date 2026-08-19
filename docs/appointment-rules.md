@@ -22,11 +22,13 @@ Una cita debe tener obligatoriamente:
 - Paciente
 - Odontólogo
 - Servicio odontológico
-- Fecha
-- Hora
-- Estado
+- Fecha y hora
+- Estado de la cita
+- Estado del pago
 
 No puede existir una cita sin alguno de estos datos.
+
+La fecha y hora de la cita se almacenarán mediante un único valor `dateTime`.
 
 ---
 
@@ -41,15 +43,108 @@ No puede existir una cita sin alguno de estos datos.
 7. El paciente selecciona fecha y hora.
 8. Confirma la reserva.
 9. La cita queda inmediatamente en estado **Confirmada**.
+10. El estado del pago se gestiona de forma independiente.
+
+---
+
+# Validaciones para crear una cita
+
+Para crear una cita deben cumplirse las siguientes condiciones:
+
+- El paciente debe existir y estar activo.
+- El odontólogo debe existir y estar activo.
+- El usuario asociado al odontólogo debe tener rol `doctor`.
+- El servicio debe existir y estar activo.
+- La especialidad del servicio debe coincidir con la especialidad del odontólogo.
+- La fecha y hora de la cita no pueden encontrarse en el pasado.
+- La cita debe encontrarse dentro del horario laboral del odontólogo.
+- El espacio completo correspondiente a la duración del servicio debe encontrarse disponible.
+- El paciente no puede tener otra cita que se solape con el mismo período.
+- El odontólogo no puede tener otra cita que se solape con el mismo período.
 
 ---
 
 # Disponibilidad
 
-- Un odontólogo no puede tener dos citas en el mismo horario.
-- Un paciente no puede tener dos citas en el mismo horario.
-- Solo se mostrarán horarios disponibles.
-- No se podrán reservar horarios fuera del horario laboral del odontólogo.
+Un odontólogo no puede tener dos citas que se solapen.
+
+Un paciente no puede tener dos citas que se solapen.
+
+La duración del servicio determina el espacio de tiempo ocupado por la cita.
+
+Ejemplo:
+
+```text
+Servicio: Valoración
+Duración: 30 minutos
+
+Cita:
+14:00 → 14:30
+```
+
+Una cita que comience a las `14:15` no estará permitida porque existe un solapamiento.
+
+Una cita que comience a las `14:30` podrá ser permitida si cumple las demás reglas de disponibilidad.
+
+---
+
+# Horario laboral
+
+La cita debe encontrarse completamente dentro del horario laboral activo del odontólogo.
+
+Ejemplo:
+
+```text
+Horario del odontólogo:
+
+08:00 → 17:00
+```
+
+Una cita de 30 minutos a las:
+
+```text
+16:30 → 17:00
+```
+
+es válida.
+
+Una cita de 30 minutos a las:
+
+```text
+16:45 → 17:15
+```
+
+no es válida porque supera el horario laboral.
+
+Los horarios del consultorio corresponden a los días laborales de lunes a viernes.
+
+---
+
+# Especialidad
+
+El servicio seleccionado debe pertenecer a la misma especialidad del odontólogo.
+
+Ejemplo válido:
+
+```text
+Odontólogo
+Especialidad: Ortodoncia
+
+Servicio
+Especialidad: Ortodoncia
+```
+
+Ejemplo inválido:
+
+```text
+Odontólogo
+Especialidad: Ortodoncia
+
+Servicio
+Especialidad: Endodoncia
+```
+
+En este caso la cita no podrá ser creada.
 
 ---
 
@@ -61,31 +156,62 @@ Cuando llega la fecha de la cita:
 2. La cita cambia al estado **En curso**.
 3. El odontólogo registra el diagnóstico y tratamiento.
 4. La cita cambia al estado **Completada**.
-5. Se genera el historial clínico.
+5. Se genera o actualiza el historial clínico.
 
 ---
 
 # Estados de una cita
 
-- Confirmada
-- En curso
-- Completada
-- Cancelada
-- No asistió
+- `confirmed` - Confirmada
+- `in_progress` - En curso
+- `completed` - Completada
+- `cancelled` - Cancelada
+- `no_show` - No asistió
 
 ---
 
 # Flujo de Estados
 
+```text
 Confirmada
 │
 ├── En curso
-│ │
-│ └── Completada
+│   │
+│   └── Completada
 │
 ├── Cancelada
 │
 └── No asistió
+```
+
+Una cita cancelada o marcada como no asistió no vuelve al estado Confirmada mediante el flujo normal.
+
+---
+
+# Estado del pago
+
+El estado del pago se manejará independientemente del estado de la cita.
+
+Estados iniciales:
+
+- `pending` - Pendiente
+- `paid` - Pagado
+
+La creación de una cita no depende de que el pago haya sido realizado previamente.
+
+---
+
+# Pago
+
+En la versión MVP:
+
+- El pago será un módulo independiente.
+- El pago no condiciona la creación de la cita.
+- La cita puede crearse aunque el pago se encuentre pendiente.
+- La recepcionista podrá registrar o confirmar posteriormente el pago.
+- `paymentStatus` permitirá conocer el estado actual del pago asociado a la cita.
+
+En versiones futuras se podrá implementar pago anticipado en línea.
 
 ---
 
@@ -103,6 +229,8 @@ No puede cancelar:
 
 La cancelación debe realizarse con un mínimo de **24 horas de anticipación**.
 
+Las citas canceladas permanecen almacenadas para mantener la trazabilidad.
+
 ---
 
 # Reprogramación
@@ -115,17 +243,22 @@ Puede reprogramar:
 
 Condiciones:
 
-- Debe existir disponibilidad.
+- Debe existir disponibilidad para la nueva fecha y hora.
+- La nueva fecha debe encontrarse dentro del horario laboral del odontólogo.
+- El espacio completo correspondiente a la duración del servicio debe estar disponible.
+- No debe existir solapamiento con otra cita del paciente.
+- No debe existir solapamiento con otra cita del odontólogo.
 - La cita mantiene el estado **Confirmada**.
-- Se registra la modificación en el historial.
+- Se actualiza `dateTime`.
+- Se registra la modificación mediante los campos de auditoría correspondientes.
 
 ---
 
 # Historial
 
-Las citas nunca se eliminan.
+Las citas nunca se eliminan físicamente.
 
-Las citas canceladas y las inasistencias permanecen registradas para mantener la trazabilidad.
+Las citas canceladas y las inasistencias permanecen registradas para mantener la trazabilidad del sistema.
 
 ---
 
@@ -134,34 +267,34 @@ Las citas canceladas y las inasistencias permanecen registradas para mantener la
 Cada cita conservará:
 
 - Fecha de creación.
-- Última modificación.
+- Fecha de última modificación.
 - Usuario que creó la cita.
 - Usuario que realizó el último cambio de estado.
+
+Los campos de auditoría permitirán identificar quién realizó las principales acciones sobre la cita.
 
 ---
 
 # Servicio Odontológico
 
-Cada cita almacenará una instantánea (snapshot) del servicio:
+Cada cita almacenará una instantánea (snapshot) del servicio utilizado al momento de crear la cita.
 
-- serviceId
+El snapshot conservará:
+
+- `serviceId`
 - Nombre del servicio
 - Duración
 - Precio
 
-Esto garantiza conservar el historial incluso si el servicio cambia posteriormente.
+Esto garantiza conservar el historial de la cita incluso si posteriormente el servicio cambia de nombre, duración o precio.
 
 ---
 
-# Pago
+# Notas
 
-En la versión MVP:
+La cita podrá almacenar observaciones relacionadas con su gestión.
 
-- El pago será un módulo independiente.
-- El pago no condiciona la creación de la cita.
-- La recepcionista podrá registrar el pago posteriormente.
-
-En versiones futuras se podrá implementar pago anticipado en línea.
+Las notas clínicas propias de la atención odontológica serán gestionadas posteriormente mediante el módulo correspondiente al historial clínico y atención odontológica.
 
 ---
 
@@ -182,3 +315,4 @@ Enviar notificaciones cuando:
 - Integración con Google Calendar.
 - Confirmación por correo.
 - Recordatorios automáticos.
+- Integración con servicios de notificación.
