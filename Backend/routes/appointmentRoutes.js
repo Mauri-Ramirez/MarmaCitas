@@ -7,6 +7,8 @@ import {
   rescheduleAppointment,
   cancelAppointment,
   updateAppointmentStatus,
+  getMyAppointments,
+  getMyDoctorAppointments,
 } from "../controllers/appointmentController.js";
 
 import verifyToken from "../middlewares/authMiddleware.js";
@@ -41,6 +43,15 @@ router.get(
   verifyToken,
   requireRole("admin", "receptionist"),
   getAppointments,
+);
+
+router.get("/my", verifyToken, requireRole("patient"), getMyAppointments);
+
+router.get(
+  "/doctor",
+  verifyToken,
+  requireRole("doctor"),
+  getMyDoctorAppointments,
 );
 
 // Obtener cita por ID

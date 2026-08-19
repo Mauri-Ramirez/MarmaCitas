@@ -23,7 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes); //PUBLICO
-app.use("/api/user", userRoutes); //PROTEGIDO
+app.use("/api/users", userRoutes); //PROTEGIDO
 app.use("/api/specialties", specialtyRoutes); //Especialidades
 app.use("/api/services", serviceRoutes); //Servicios
 app.use("/api/doctors", doctorRoutes); //Doctores

@@ -1,34 +1,60 @@
 import express from "express";
 
+import {
+  getMyProfile,
+  updateMyProfile,
+} from "../controllers/userController.js";
+
 import verifyToken from "../middlewares/authMiddleware.js";
 import requireRole from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
 
-// Ruta protegida para cualquier usuario autenticado
+/**
+ * =====================================================
+ * Rutas: User
+ * -----------------------------------------------------
+ * Gestiona las operaciones relacionadas con el usuario
+ * autenticado.
+ *
+ * Proyecto: MarmaCitas
+ * =====================================================
+ */
 
-router.get("/profile", verifyToken, (req, res) => {
+/**
+ * =====================================================
+ * Obtener perfil propio
+ * -----------------------------------------------------
+ * Acceso:
+ * Cualquier usuario autenticado
+ * =====================================================
+ */
+
+router.get("/me", verifyToken, getMyProfile);
+
+/**
+ * =====================================================
+ * Actualizar perfil propio
+ * -----------------------------------------------------
+ * Acceso:
+ * Cualquier usuario autenticado
+ * =====================================================
+ */
+
+router.put("/me", verifyToken, updateMyProfile);
+
+/**
+ * =====================================================
+ * Ruta exclusiva para administradores
+ * -----------------------------------------------------
+ * Se conserva como prueba de autorización de roles.
+ * =====================================================
+ */
+
+router.get("/admin", verifyToken, requireRole("admin"), (req, res) => {
   res.json({
-    message: "Acceso permitido",
-
-    user: req.user,
+    message: "Bienvenido administrador",
   });
 });
-
-// Ruta exclusiva para administradores
-
-router.get(
-  "/admin",
-
-  verifyToken,
-
-  requireRole("admin"),
-
-  (req, res) => {
-    res.json({
-      message: "Bienvenido administrador",
-    });
-  },
-);
 
 export default router;

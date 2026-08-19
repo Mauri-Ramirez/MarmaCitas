@@ -302,6 +302,66 @@ export const getAppointmentById = async (req, res) => {
 
 /**
  * =====================================================
+ * Obtener citas del paciente autenticado
+ * =====================================================
+ *
+ * GET /api/appointments/my
+ *
+ * Acceso:
+ * Paciente
+ */
+export const getMyAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      patient: req.user.id,
+    })
+      .populate("doctor", "name email professionalLicense phone")
+      .populate("service", "name description duration price specialty")
+      .populate("createdBy", "name email role")
+      .populate("lastStatusChangedBy", "name email role")
+      .sort({ dateTime: 1 });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener las citas del paciente.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * =====================================================
+ * Obtener citas del odontólogo autenticado
+ * =====================================================
+ *
+ * GET /api/appointments/doctor
+ *
+ * Acceso:
+ * Odontólogo
+ */
+export const getMyDoctorAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      doctor: req.user.id,
+    })
+      .populate("patient", "name email")
+      .populate("service", "name description duration price specialty")
+      .populate("createdBy", "name email role")
+      .populate("lastStatusChangedBy", "name email role")
+      .sort({ dateTime: 1 });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener las citas del odontólogo.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * =====================================================
  * Crear cita
  * =====================================================
  */
