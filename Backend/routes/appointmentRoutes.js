@@ -9,6 +9,7 @@ import {
   updateAppointmentStatus,
   getMyAppointments,
   getMyDoctorAppointments,
+  getAppointmentAvailability,
 } from "../controllers/appointmentController.js";
 
 import verifyToken from "../middlewares/authMiddleware.js";
@@ -52,6 +53,13 @@ router.get(
   verifyToken,
   requireRole("doctor"),
   getMyDoctorAppointments,
+);
+
+router.get(
+  "/availability",
+  verifyToken,
+  requireRole("patient", "receptionist", "admin"),
+  getAppointmentAvailability,
 );
 
 // Obtener cita por ID
