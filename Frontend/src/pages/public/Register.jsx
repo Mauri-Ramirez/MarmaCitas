@@ -18,10 +18,8 @@ const [password, setPassword] = useState("");
 
 const handleSubmit = async (e) => {
 e.preventDefault();
-console.log(name, email, password);
 
   try {
-console.log(name, email, password);
     await registerRequest({
       name,
       email,

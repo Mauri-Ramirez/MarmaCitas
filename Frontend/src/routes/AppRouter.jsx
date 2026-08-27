@@ -14,6 +14,7 @@ import PatientDashboard from "../pages/patient/PatientDashboard";
 import DoctorDashboard from "../pages/doctor/DoctorDashboard";
 import ReceptionDashboard from "../pages/reception/ReceptionDashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import BookAppointment from "../pages/patient/BookAppointment";
 
 
 // Layouts
@@ -23,6 +24,7 @@ import ReceptionLayout from "../layouts/ReceptionLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import PublicLayout from "../layouts/PublicLayout";
 import PrivateRoute from "./PrivateRoute";
+import PatientAppointments from "../pages/patient/PatientAppointments";
 
 
 function AppRouter(){
@@ -67,6 +69,17 @@ element={
 </PrivateRoute>
 }
 />
+      
+<Route
+  path="/paciente/agendar"
+  element={
+    <PrivateRoute allowedRoles={["patient"]}>
+      <PatientLayout>
+        <BookAppointment />
+      </PatientLayout>
+    </PrivateRoute>
+  }
+/>
 
 
 
@@ -107,6 +120,17 @@ element={
   </AdminLayout>
 </PrivateRoute>
 }
+/>
+      
+  <Route
+  path="/paciente/citas"
+  element={
+    <PrivateRoute allowedRoles={["patient"]}>
+      <PatientLayout>
+        <PatientAppointments />
+      </PatientLayout>
+    </PrivateRoute>
+  }
 />
 
 

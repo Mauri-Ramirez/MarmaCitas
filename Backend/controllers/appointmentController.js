@@ -367,7 +367,8 @@ export const getMyDoctorAppointments = async (req, res) => {
  */
 export const createAppointment = async (req, res) => {
   try {
-    const { patient, doctor, service, dateTime, notes } = req.body;
+    const { doctor, service, dateTime, notes } = req.body;
+    const patient = req.user.id;
 
     // =================================================
     // Validar campos obligatorios
@@ -904,6 +905,285 @@ export const updateAppointmentStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error al actualizar el estado de la cita.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * =====================================================
+ * Obtener disponibilidad de un odontólogo
+ * -----------------------------------------------------
+ * Consulta los horarios disponibles para un odontólogo,
+ * servicio y fecha determinados.
+ *
+ * Parámetros:
+ * - doctorId
+ * - serviceId
+ * - date (YYYY-MM-DD)
+ *
+ * Zona horaria del consultorio:
+ * America/Bogota
+ *
+ * Proyecto: MarmaCitas
+ * =====================================================
+ */
+export const getAppointmentAvailability = async (req, res) => {
+  try {
+    const { doctorId, serviceId, date } = req.query;
+
+    // =================================================
+    // Validar parámetros obligatorios
+    // =================================================
+
+    if (!doctorId || !serviceId || !date) {
+      return res.status(400).json({
+        message: "Los parámetros doctorId, serviceId y date son obligatorios.",
+      });
+    }
+
+    // =================================================
+    // Validar formato de fecha
+    // =================================================
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dateRegex.test(date)) {
+      return res.status(400).json({
+        message: "La fecha debe tener el formato YYYY-MM-DD.",
+      });
+    }
+
+    // =================================================
+    // Validar que la fecha exista realmente
+    // =================================================
+
+    const [year, month, day] = date.split("-").map(Number);
+
+    const requestedDate = new Date(Date.UTC(year, month - 1, day));
+
+    if (
+      requestedDate.getUTCFullYear() !== year ||
+      requestedDate.getUTCMonth() !== month - 1 ||
+      requestedDate.getUTCDate() !== day
+    ) {
+      return res.status(400).json({
+        message: "La fecha proporcionada no es válida.",
+      });
+    }
+
+    // =================================================
+    // Validar lunes a viernes
+    // =================================================
+
+    const dayOfWeek = requestedDate.getUTCDay();
+
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return res.status(200).json({
+        date,
+        availableSlots: [],
+      });
+    }
+
+    // =================================================
+    // Buscar odontólogo activo
+    // =================================================
+
+    const doctor = await User.findOne({
+      _id: doctorId,
+      role: "doctor",
+      active: true,
+    }).select("name email professionalLicense phone specialty");
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Odontólogo no encontrado o inactivo.",
+      });
+    }
+
+    // =================================================
+    // Buscar servicio activo
+    // =================================================
+
+    const service = await Service.findOne({
+      _id: serviceId,
+      active: true,
+    }).select("name duration price specialty");
+
+    if (!service) {
+      return res.status(404).json({
+        message: "Servicio no encontrado o inactivo.",
+      });
+    }
+
+    // =================================================
+    // Validar especialidad
+    // =================================================
+
+    if (doctor.specialty.toString() !== service.specialty.toString()) {
+      return res.status(400).json({
+        message:
+          "El servicio seleccionado no corresponde a la especialidad del odontólogo.",
+      });
+    }
+
+    // =================================================
+    // Buscar horario activo
+    // =================================================
+
+    const schedule = await Schedule.findOne({
+      doctor: doctor._id,
+      active: true,
+    });
+
+    if (!schedule) {
+      return res.status(404).json({
+        message: "El odontólogo no tiene un horario activo.",
+      });
+    }
+
+    // =================================================
+    // Convertir HH:mm a minutos
+    // =================================================
+
+    const timeToMinutes = (time) => {
+      const [hours, minutes] = time.split(":").map(Number);
+
+      return hours * 60 + minutes;
+    };
+
+    const minutesToTime = (minutes) => {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+
+      return `${String(hours).padStart(2, "0")}:${String(
+        remainingMinutes,
+      ).padStart(2, "0")}`;
+    };
+
+    const scheduleStart = timeToMinutes(schedule.startTime);
+    const scheduleEnd = timeToMinutes(schedule.endTime);
+
+    // =================================================
+    // Validar duración
+    // =================================================
+
+    if (service.duration <= 0) {
+      return res.status(400).json({
+        message: "La duración del servicio no es válida.",
+      });
+    }
+
+    // =================================================
+    // Crear rango del día en hora local Colombia
+    //
+    // El rango solicitado es:
+    //
+    // 00:00 America/Bogota
+    // hasta
+    // 23:59:59.999 America/Bogota
+    //
+    // Las citas están almacenadas como UTC.
+    // =================================================
+
+    const dayStart = new Date(`${date}T05:00:00.000Z`);
+
+    const nextDayStart = new Date(dayStart);
+
+    nextDayStart.setUTCDate(nextDayStart.getUTCDate() + 1);
+
+    // =================================================
+    // Obtener citas que bloquean disponibilidad
+    // =================================================
+
+    const appointments = await Appointment.find({
+      doctor: doctor._id,
+      dateTime: {
+        $gte: dayStart,
+        $lt: nextDayStart,
+      },
+      status: {
+        $in: ["confirmed", "in_progress"],
+      },
+    }).select("dateTime serviceSnapshot");
+
+    // =================================================
+    // Obtener hora local Colombia desde un Date UTC
+    // =================================================
+
+    const getBogotaMinutes = (dateTime) => {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Bogota",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).formatToParts(dateTime);
+
+      const hour = Number(parts.find((part) => part.type === "hour").value);
+
+      const minute = Number(parts.find((part) => part.type === "minute").value);
+
+      return hour * 60 + minute;
+    };
+
+    // =================================================
+    // Construir intervalos ocupados
+    // =================================================
+
+    const occupiedIntervals = appointments.map((appointment) => {
+      const startMinutes = getBogotaMinutes(appointment.dateTime);
+
+      const duration = appointment.serviceSnapshot?.duration || 0;
+
+      return {
+        start: startMinutes,
+        end: startMinutes + duration,
+      };
+    });
+
+    // =================================================
+    // Generar slots disponibles
+    // =================================================
+
+    const availableSlots = [];
+
+    for (
+      let slotStart = scheduleStart;
+      slotStart + service.duration <= scheduleEnd;
+      slotStart += service.duration
+    ) {
+      const slotEnd = slotStart + service.duration;
+
+      const hasConflict = occupiedIntervals.some(
+        (appointment) =>
+          slotStart < appointment.end && slotEnd > appointment.start,
+      );
+
+      if (!hasConflict) {
+        availableSlots.push(minutesToTime(slotStart));
+      }
+    }
+
+    // =================================================
+    // Respuesta
+    // =================================================
+
+    res.status(200).json({
+      date,
+      doctor: {
+        _id: doctor._id,
+        name: doctor.name,
+      },
+      service: {
+        _id: service._id,
+        name: service.name,
+        duration: service.duration,
+      },
+      availableSlots,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener la disponibilidad del odontólogo.",
       error: error.message,
     });
   }
