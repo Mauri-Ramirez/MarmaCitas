@@ -15,6 +15,12 @@ import DoctorDashboard from "../pages/doctor/DoctorDashboard";
 import ReceptionDashboard from "../pages/reception/ReceptionDashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import BookAppointment from "../pages/patient/BookAppointment";
+import PatientProfile from "../pages/patient/PatientProfile";
+import DoctorProfile from "../pages/doctor/DoctorProfile";
+import DoctorAppointments from "../pages/doctor/DoctorAppointments";
+import DoctorSchedule from "../pages/doctor/DoctorSchedule";
+import ReceptionProfile from "../pages/reception/ReceptionProfile";
+import AdminProfile from "../pages/admin/AdminProfile";
 
 
 // Layouts
@@ -80,6 +86,17 @@ element={
     </PrivateRoute>
   }
 />
+      
+<Route
+  path="/paciente/perfil"
+  element={
+    <PrivateRoute allowedRoles={["patient"]}>
+      <PatientLayout>
+        <PatientProfile />
+      </PatientLayout>
+    </PrivateRoute>
+  }
+/>
 
 
 
@@ -95,6 +112,17 @@ element={
 }
 />
 
+<Route
+  path="/odontologo/perfil"
+  element={
+    <PrivateRoute allowedRoles={["doctor"]}>
+      <DoctorLayout>
+        <DoctorProfile />
+      </DoctorLayout>
+    </PrivateRoute>
+  }
+/>
+
 
 
 <Route
@@ -106,6 +134,17 @@ element={
   </ReceptionLayout>
 </PrivateRoute>
 }
+/>
+
+<Route
+  path="/recepcion/perfil"
+  element={
+    <PrivateRoute allowedRoles={["receptionist"]}>
+      <ReceptionLayout>
+        <ReceptionProfile />
+      </ReceptionLayout>
+    </PrivateRoute>
+  }
 />
 
 
@@ -121,7 +160,41 @@ element={
 </PrivateRoute>
 }
 />
+
+<Route
+  path="/odontologo/horario"
+  element={
+    <PrivateRoute allowedRoles={["doctor"]}>
+      <DoctorLayout>
+        <DoctorSchedule />
+      </DoctorLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/odontologo/citas"
+  element={
+    <PrivateRoute allowedRoles={["doctor"]}>
+      <DoctorLayout>
+        <DoctorAppointments />
+      </DoctorLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/perfil"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminProfile />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
       
+   
   <Route
   path="/paciente/citas"
   element={

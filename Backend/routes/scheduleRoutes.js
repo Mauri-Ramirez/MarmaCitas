@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   getSchedules,
+  getMySchedule,
   getScheduleById,
   createSchedule,
   updateSchedule,
@@ -29,6 +30,9 @@ const router = express.Router();
 
 // Obtener todos los horarios
 router.get("/", verifyToken, requireRole("admin"), getSchedules);
+
+// Obtener horario propio del odontólogo autenticado
+router.get("/my", verifyToken, requireRole("doctor"), getMySchedule);
 
 // Obtener horario por ID
 router.get("/:id", verifyToken, requireRole("admin"), getScheduleById);

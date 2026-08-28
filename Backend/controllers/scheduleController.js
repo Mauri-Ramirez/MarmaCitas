@@ -40,6 +40,31 @@ export const getSchedules = async (req, res) => {
 };
 
 /**
+ * Obtener el horario activo del odontólogo autenticado
+ */
+export const getMySchedule = async (req, res) => {
+  try {
+    const schedule = await Schedule.findOne({
+      doctor: req.user.id,
+      active: true,
+    }).populate("doctor", "name email professionalLicense");
+
+    if (!schedule) {
+      return res.status(404).json({
+        message: "Horario no encontrado.",
+      });
+    }
+
+    res.status(200).json(schedule);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener el horario.",
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Obtener horario por ID
  */
 export const getScheduleById = async (req, res) => {

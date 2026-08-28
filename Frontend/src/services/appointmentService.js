@@ -11,6 +11,24 @@ export const getMyAppointments = async () => {
 };
 
 // =====================================================
+// Obtener citas del odontólogo autenticado
+// =====================================================
+
+export const getMyDoctorAppointments = async () => {
+  const res = await axios.get("/appointments/doctor");
+
+  return res.data;
+};
+
+export const updateAppointmentStatus = async (appointmentId, status) => {
+  const res = await axios.patch(`/appointments/${appointmentId}/status`, {
+    status,
+  });
+
+  return res.data;
+};
+
+// =====================================================
 // Obtener disponibilidad de un odontólogo
 // -----------------------------------------------------
 // Parámetros:
