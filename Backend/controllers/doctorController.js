@@ -13,14 +13,27 @@ import bcrypt from "bcryptjs";
  */
 
 /**
- * Obtener todos los odontólogos activos
+ * Obtener odontólogos activos
+ *
+ * Permite filtrar por especialidad mediante:
+ *
+ * GET /api/doctors?specialty=ID_ESPECIALIDAD
  */
 export const getDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({
+    const { specialty } = req.query;
+
+    const filter = {
       role: "doctor",
       active: true,
-    })
+    };
+
+    // Filtrar por especialidad si fue proporcionada
+    if (specialty) {
+      filter.specialty = specialty;
+    }
+
+    const doctors = await User.find(filter)
       .select("-password")
       .populate("specialty", "name");
 
