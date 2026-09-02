@@ -20,6 +20,7 @@ import DoctorProfile from "../pages/doctor/DoctorProfile";
 import DoctorAppointments from "../pages/doctor/DoctorAppointments";
 import DoctorSchedule from "../pages/doctor/DoctorSchedule";
 import ReceptionProfile from "../pages/reception/ReceptionProfile";
+import ReceptionPatients from "../pages/reception/ReceptionPatients";
 import AdminProfile from "../pages/admin/AdminProfile";
 
 
@@ -159,6 +160,17 @@ element={
   </AdminLayout>
 </PrivateRoute>
 }
+/>
+
+<Route
+  path="/recepcion/pacientes"
+  element={
+    <PrivateRoute allowedRoles={["receptionist"]}>
+      <ReceptionLayout>
+        <ReceptionPatients />
+      </ReceptionLayout>
+    </PrivateRoute>
+  }
 />
 
 <Route

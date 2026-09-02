@@ -2,6 +2,7 @@ import Appointment from "../models/Appointment.js";
 import User from "../models/User.js";
 import Service from "../models/Service.js";
 import Schedule from "../models/Schedule.js";
+import mongoose from "mongoose";
 
 /**
  * =====================================================
@@ -23,6 +24,53 @@ import Schedule from "../models/Schedule.js";
  * reserva futura.
  */
 const activeAppointmentStatuses = ["confirmed", "in_progress"];
+
+const appointmentStatuses = [
+  "confirmed",
+  "in_progress",
+  "completed",
+  "cancelled",
+  "no_show",
+];
+
+const paymentStatuses = ["pending", "paid"];
+
+const appointmentListQueryParams = new Set([
+  "date",
+  "dateFrom",
+  "dateTo",
+  "doctorId",
+  "patientId",
+  "serviceId",
+  "status",
+  "paymentStatus",
+  "search",
+  "page",
+  "limit",
+]);
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const parseCalendarDate = (value) => {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+};
+
+const getBogotaDayStart = (date) => new Date(`${date}T05:00:00.000Z`);
 
 /**
  * =====================================================
@@ -254,15 +302,223 @@ const validateSchedule = async ({ doctor, dateTime, duration }) => {
  */
 export const getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find()
-      .populate("patient", "name email")
-      .populate("doctor", "name email professionalLicense phone")
-      .populate("service", "name description duration price specialty")
-      .populate("createdBy", "name email role")
-      .populate("lastStatusChangedBy", "name email role")
-      .sort({ dateTime: 1 });
+    const unknownQueryParam = Object.keys(req.query).find(
+      (param) => !appointmentListQueryParams.has(param),
+    );
 
-    res.status(200).json(appointments);
+    if (unknownQueryParam) {
+      return res.status(400).json({
+        message: `El parámetro ${unknownQueryParam} no está permitido.`,
+      });
+    }
+
+    const {
+      date,
+      dateFrom,
+      dateTo,
+      doctorId,
+      patientId,
+      serviceId,
+      status,
+      paymentStatus,
+      search,
+      page = "1",
+      limit = "20",
+    } = req.query;
+
+    if (date !== undefined && (dateFrom !== undefined || dateTo !== undefined)) {
+      return res.status(400).json({
+        message: "date no puede combinarse con dateFrom o dateTo.",
+      });
+    }
+
+    if (
+      (dateFrom !== undefined && dateTo === undefined) ||
+      (dateFrom === undefined && dateTo !== undefined)
+    ) {
+      return res.status(400).json({
+        message: "dateFrom y dateTo deben enviarse juntos.",
+      });
+    }
+
+    if (
+      typeof page !== "string" ||
+      typeof limit !== "string" ||
+      !/^\d+$/.test(page) ||
+      !/^\d+$/.test(limit)
+    ) {
+      return res.status(400).json({
+        message: "page y limit deben ser enteros positivos.",
+      });
+    }
+
+    const currentPage = Number(page);
+    const currentLimit = Number(limit);
+
+    if (
+      !Number.isSafeInteger(currentPage) ||
+      !Number.isSafeInteger(currentLimit) ||
+      currentPage < 1 ||
+      currentLimit < 1 ||
+      currentLimit > 50
+    ) {
+      return res.status(400).json({
+        message: "page debe ser mayor o igual a 1 y limit debe estar entre 1 y 50.",
+      });
+    }
+
+    const query = {};
+
+    if (date !== undefined) {
+      const parsedDate = parseCalendarDate(date);
+
+      if (!parsedDate) {
+        return res.status(400).json({
+          message: "date debe tener el formato YYYY-MM-DD y ser una fecha válida.",
+        });
+      }
+
+      const dayStart = getBogotaDayStart(date);
+      const nextDayStart = new Date(dayStart);
+
+      nextDayStart.setUTCDate(nextDayStart.getUTCDate() + 1);
+
+      query.dateTime = {
+        $gte: dayStart,
+        $lt: nextDayStart,
+      };
+    }
+
+    if (dateFrom !== undefined && dateTo !== undefined) {
+      const parsedDateFrom = parseCalendarDate(dateFrom);
+      const parsedDateTo = parseCalendarDate(dateTo);
+
+      if (!parsedDateFrom || !parsedDateTo) {
+        return res.status(400).json({
+          message:
+            "dateFrom y dateTo deben tener el formato YYYY-MM-DD y ser fechas válidas.",
+        });
+      }
+
+      if (parsedDateFrom > parsedDateTo) {
+        return res.status(400).json({
+          message: "dateFrom no puede ser posterior a dateTo.",
+        });
+      }
+
+      const rangeInDays =
+        (parsedDateTo.getTime() - parsedDateFrom.getTime()) /
+          (1000 * 60 * 60 * 24) +
+        1;
+
+      if (rangeInDays > 31) {
+        return res.status(400).json({
+          message: "El rango de fechas no puede superar 31 días.",
+        });
+      }
+
+      const rangeStart = getBogotaDayStart(dateFrom);
+      const rangeEnd = getBogotaDayStart(dateTo);
+
+      rangeEnd.setUTCDate(rangeEnd.getUTCDate() + 1);
+
+      query.dateTime = {
+        $gte: rangeStart,
+        $lt: rangeEnd,
+      };
+    }
+
+    const idFilters = [
+      ["doctor", doctorId],
+      ["patient", patientId],
+      ["service", serviceId],
+    ];
+
+    for (const [field, value] of idFilters) {
+      if (value !== undefined) {
+        if (typeof value !== "string" || !mongoose.isValidObjectId(value)) {
+          return res.status(400).json({
+            message: `El identificador de ${field} no es válido.`,
+          });
+        }
+
+        query[field] = value;
+      }
+    }
+
+    if (status !== undefined) {
+      if (typeof status !== "string" || !appointmentStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "El estado de la cita no es válido.",
+        });
+      }
+
+      query.status = status;
+    }
+
+    if (paymentStatus !== undefined) {
+      if (
+        typeof paymentStatus !== "string" ||
+        !paymentStatuses.includes(paymentStatus)
+      ) {
+        return res.status(400).json({
+          message: "El estado de pago no es válido.",
+        });
+      }
+
+      query.paymentStatus = paymentStatus;
+    }
+
+    if (search !== undefined) {
+      if (typeof search !== "string" || search.length > 100) {
+        return res.status(400).json({
+          message: "search debe ser un texto de máximo 100 caracteres.",
+        });
+      }
+
+      const normalizedSearch = search.trim();
+
+      if (normalizedSearch) {
+        const searchRegex = new RegExp(escapeRegex(normalizedSearch), "i");
+        const patients = await User.find({
+          role: "patient",
+          $or: [{ name: searchRegex }, { email: searchRegex }],
+        }).select("_id");
+
+        const patientIds = patients.map((patient) => patient._id);
+
+        if (query.patient) {
+          query.patient = {
+            $in: patientIds.filter(
+              (id) => id.equals(query.patient),
+            ),
+          };
+        } else {
+          query.patient = { $in: patientIds };
+        }
+      }
+    }
+
+    const [appointments, total] = await Promise.all([
+      Appointment.find(query)
+        .select("patient doctor serviceSnapshot dateTime status paymentStatus notes")
+        .populate("patient", "name email")
+        .populate("doctor", "name")
+        .sort({ dateTime: 1, _id: 1 })
+        .skip((currentPage - 1) * currentLimit)
+        .limit(currentLimit),
+      Appointment.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      appointments,
+      pagination: {
+        page: currentPage,
+        limit: currentLimit,
+        total,
+        pages: Math.ceil(total / currentLimit),
+      },
+    });
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener las citas.",
@@ -367,8 +623,28 @@ export const getMyDoctorAppointments = async (req, res) => {
  */
 export const createAppointment = async (req, res) => {
   try {
-    const { doctor, service, dateTime, notes } = req.body;
-    const patient = req.user.id;
+    const { patientId, doctor, service, dateTime, notes } = req.body;
+    let patient = req.user.id;
+
+    // =================================================
+    // Determinar paciente según el rol autenticado
+    // =================================================
+
+    if (req.user.role === "receptionist" || req.user.role === "admin") {
+      if (!patientId) {
+        return res.status(400).json({
+          message: "El identificador del paciente es obligatorio.",
+        });
+      }
+
+      if (!mongoose.isValidObjectId(patientId)) {
+        return res.status(400).json({
+          message: "El identificador del paciente no es válido.",
+        });
+      }
+
+      patient = patientId;
+    }
 
     // =================================================
     // Validar campos obligatorios

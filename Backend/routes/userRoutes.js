@@ -1,6 +1,9 @@
 import express from "express";
 
 import {
+  createPatient,
+  getPatientById,
+  getPatients,
   getMyProfile,
   updateMyProfile,
 } from "../controllers/userController.js";
@@ -42,6 +45,36 @@ router.get("/me", verifyToken, getMyProfile);
  */
 
 router.put("/me", verifyToken, updateMyProfile);
+
+/**
+ * =====================================================
+ * Gestión administrativa de pacientes
+ * -----------------------------------------------------
+ * Acceso:
+ * Recepción y administrador
+ * =====================================================
+ */
+
+router.get(
+  "/patients",
+  verifyToken,
+  requireRole("receptionist", "admin"),
+  getPatients,
+);
+
+router.get(
+  "/patients/:id",
+  verifyToken,
+  requireRole("receptionist", "admin"),
+  getPatientById,
+);
+
+router.post(
+  "/patients",
+  verifyToken,
+  requireRole("receptionist", "admin"),
+  createPatient,
+);
 
 /**
  * =====================================================
