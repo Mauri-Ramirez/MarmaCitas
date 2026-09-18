@@ -1,16 +1,56 @@
-# React + Vite
+# MarmaCitas — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Guía breve del frontend real (React + Vite + Tailwind CSS 4).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19, Vite, Tailwind CSS 4, React Router, Axios, react-day-picker.
 
-## React Compiler
+## Estructura principal
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+  api/          -> instancia Axios (baseURL desde VITE_API_URL)
+  context/      -> AuthContext (sesión, login, logout, updateUser)
+  routes/       -> AppRouter (rutas) y PrivateRoute (protección por rol)
+  layouts/      -> layouts por rol y público
+  components/   -> componentes compartidos (navegación, home, citas, common)
+  pages/        -> páginas por rol (patient, doctor, receptionist, admin, public)
+  services/     -> capa HTTP por recurso
+  hooks/        -> useAppointmentAvailability
+```
 
-## Expanding the ESLint configuration
+## Rutas por rol
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Público:** `/`, `/login`, `/registro`.
+- **Paciente:** `/paciente`, `/paciente/agendar`, `/paciente/citas`, `/paciente/perfil`.
+- **Odontólogo:** `/odontologo`, `/odontologo/citas`, `/odontologo/perfil`.
+- **Recepción:** `/recepcion`, `/recepcion/citas/agendar`, `/recepcion/citas`,
+  `/recepcion/pacientes`, `/recepcion/odontologos`, `/recepcion/perfil`.
+- **Admin:** `/admin`, `/admin/citas/agendar`, `/admin/usuarios`, `/admin/odontologos`,
+  `/admin/catalogo`, `/admin/citas`, `/admin/perfil`.
+
+## Autenticación y RBAC
+
+- `AuthContext` restaura la sesión con `GET /users/me` y guarda el JWT en `localStorage`.
+- `PrivateRoute` restringe rutas por rol (capa UX); el backend es la autoridad.
+- El interceptor de Axios añade el token y limpia la sesión ante 401.
+
+## Configuración de API
+
+- Axios usa `import.meta.env.VITE_API_URL`. Para desarrollo local se define
+  `VITE_API_URL=http://localhost:5000/api` en `Frontend/.env` (copiar desde `.env.example`).
+
+## Ejecución
+
+```bash
+npm install
+npm run dev     # Vite (puerto 5173)
+```
+
+## Verificaciones
+
+```bash
+npm run lint    # 0 errores (verificado)
+npm run build   # build exitoso (verificado)
+```
