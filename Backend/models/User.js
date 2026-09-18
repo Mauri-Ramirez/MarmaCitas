@@ -33,6 +33,32 @@ const userSchema = new mongoose.Schema(
       default: true,
     },
 
+    // =================================================
+    // Información médica del paciente
+    // Editable solo por el paciente vía PUT /users/me;
+    // visible para recepción y administración.
+    // =================================================
+
+    allergies: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: [
+        300,
+        "Las alergias no pueden superar los 300 caracteres.",
+      ],
+    },
+
+    medicalNotes: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: [
+        1000,
+        "Las observaciones médicas no pueden superar los 1000 caracteres.",
+      ],
+    },
+
     // Información profesional (solo odontólogos)
     professionalLicense: {
       type: String,
@@ -58,6 +84,20 @@ const userSchema = new mongoose.Schema(
       required: function () {
         return this.role === "doctor";
       },
+    },
+
+    // =================================================
+    // Contador técnico para serializar transacciones
+    // de creación/reprogramación de citas.
+    //
+    // No forma parte del dominio y se excluye de las
+    // consultas normales mediante select: false.
+    // =================================================
+
+    appointmentLockVersion: {
+      type: Number,
+      default: 0,
+      select: false,
     },
   },
   {

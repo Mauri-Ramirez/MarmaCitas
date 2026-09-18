@@ -1,31 +1,30 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import {
-  getMyProfile,
-  updateMyProfile,
-} from "../../services/userService";
+import { getMyProfile } from "../../services/userService";
+import { getMySchedule } from "../../services/scheduleService";
 
-import { AuthContext } from "../../context/AuthContext";
+const roleLabels = {
+  patient: "Paciente",
+  doctor: "Odontólogo",
+  receptionist: "Recepción",
+  admin: "Administrador",
+};
+
+const initialsOf = (name) =>
+  (name || "")
+    .split(" ")
+    .map((part) => part[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
 function DoctorProfile() {
-  const { user, login } = useContext(AuthContext);
-
   const [profile, setProfile] = useState(null);
-
-  const [name, setName] = useState("");
-
+  const [schedule, setSchedule] = useState(null);
+  const [noSchedule, setNoSchedule] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const [saving, setSaving] = useState(false);
-
   const [error, setError] = useState("");
-
-  const [successMessage, setSuccessMessage] =
-    useState("");
-
-  // =====================================================
-  // Cargar perfil
-  // =====================================================
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -36,15 +35,14 @@ function DoctorProfile() {
         const data = await getMyProfile();
 
         setProfile(data.user);
-        setName(data.user.name || "");
-      } catch (error) {
+      } catch (loadError) {
         console.error(
           "Error al obtener el perfil del odontólogo:",
-          error,
+          loadError,
         );
 
         setError(
-          error.response?.data?.message ||
+          loadError.response?.data?.message ||
             "No fue posible cargar el perfil.",
         );
       } finally {
@@ -52,239 +50,199 @@ function DoctorProfile() {
       }
     };
 
-    loadProfile();
-  }, []);
+    const loadSchedule = async () => {
+      try {
+        const data = await getMySchedule();
 
-  // =====================================================
-  // Actualizar nombre
-  // =====================================================
+        setSchedule(data);
+      } catch (loadError) {
+        if (loadError.response?.status === 404) {
+          setNoSchedule(true);
+          return;
+        }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setError("");
-    setSuccessMessage("");
-
-    if (!name.trim()) {
-      setError("El nombre es obligatorio.");
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      const data = await updateMyProfile({
-        name: name.trim(),
-      });
-
-      setProfile(data.user);
-      setName(data.user.name || "");
-
-      // Actualizar usuario global
-      if (user) {
-        login({
-          ...user,
-          name: data.user.name,
-        });
+        console.error("Error al obtener el horario:", loadError);
       }
+    };
 
-      setSuccessMessage(
-        data.message ||
-          "Perfil actualizado correctamente.",
-      );
-    } catch (error) {
-      console.error(
-        "Error al actualizar el perfil:",
-        error,
-      );
-
-      setError(
-        error.response?.data?.message ||
-          "No fue posible actualizar el perfil.",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // =====================================================
-  // Estado de carga
-  // =====================================================
+    loadProfile();
+    loadSchedule();
+  }, []);
 
   if (loading) {
     return <p>Cargando perfil...</p>;
   }
 
   if (error && !profile) {
-    return <p>{error}</p>;
+    return <p className="text-red-600">{error}</p>;
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">
-        Mi perfil profesional
-      </h1>
+    <div className="mx-auto max-w-3xl">
+      <div className="mb-8">
+        <p className="text-sm font-medium text-primary">
+          Información profesional
+        </p>
 
-      {/* =========================================
-          Mensaje de error
-      ========================================= */}
+        <h1 className="mt-1 font-title text-3xl font-semibold text-slate-800">
+          Mi perfil profesional
+        </h1>
+      </div>
 
       {error && (
-        <p className="mb-4 text-red-600">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
           {error}
-        </p>
-      )}
-
-      {/* =========================================
-          Mensaje de éxito
-      ========================================= */}
-
-      {successMessage && (
-        <p className="mb-4 font-semibold">
-          {successMessage}
-        </p>
+        </div>
       )}
 
       {profile && (
-        <div className="border rounded-lg p-6 bg-white max-w-xl">
-
+        <div className="space-y-6">
           {/* =========================================
-              Información personal
+              Cabecera
           ========================================= */}
 
-          <div className="space-y-3 mb-6">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <div className="flex flex-col gap-4 bg-gradient-to-br from-primaryLight/50 to-white px-6 py-6 sm:flex-row sm:items-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary font-title text-xl font-semibold text-white shadow-sm">
+                {initialsOf(profile.name)}
+              </div>
 
-            <div>
-              <p className="font-semibold">
-                Nombre
-              </p>
+              <div className="flex-1">
+                <h2 className="font-title text-2xl font-semibold text-slate-800">
+                  {profile.name}
+                </h2>
 
-              <p>
-                {profile.name}
-              </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {profile.email}
+                </p>
+
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-primaryLight px-3 py-1 text-xs font-semibold text-primary">
+                    {roleLabels[profile.role] ?? profile.role}
+                  </span>
+
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      profile.active
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {profile.active ? "Activo" : "Inactivo"}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <p className="font-semibold">
-                Correo electrónico
-              </p>
+            <div className="px-6 py-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Especialidad
+                  </p>
+                  <p className="mt-1 font-medium text-slate-800">
+                    {profile.specialty?.name || "No registrada"}
+                  </p>
+                </div>
 
-              <p>
-                {profile.email}
-              </p>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Licencia profesional
+                  </p>
+                  <p className="mt-1 font-medium text-slate-800">
+                    {profile.professionalLicense || "No registrada"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Teléfono
+                  </p>
+                  <p className="mt-1 font-medium text-slate-800">
+                    {profile.phone || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Correo electrónico
+                  </p>
+                  <p className="mt-1 font-medium text-slate-800">
+                    {profile.email}
+                  </p>
+                </div>
+              </div>
             </div>
-
-            <div>
-              <p className="font-semibold">
-                Rol
-              </p>
-
-              <p>
-                {profile.role}
-              </p>
-            </div>
-
-            <div>
-              <p className="font-semibold">
-                Estado
-              </p>
-
-              <p>
-                {profile.active
-                  ? "Activo"
-                  : "Inactivo"}
-              </p>
-            </div>
-
           </div>
 
           {/* =========================================
-              Información profesional
+              Horario laboral (integrado)
           ========================================= */}
 
-          <div className="border-t pt-6 mb-6">
-
-            <h2 className="text-xl font-semibold mb-4">
-              Información profesional
-            </h2>
-
-            <div className="space-y-3">
-
-              <div>
-                <p className="font-semibold">
-                  Especialidad
-                </p>
-
-                <p>
-                  {profile.specialty?.name ||
-                    "No registrada"}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold">
-                  Licencia profesional
-                </p>
-
-                <p>
-                  {profile.professionalLicense ||
-                    "No registrada"}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold">
-                  Teléfono
-                </p>
-
-                <p>
-                  {profile.phone ||
-                    "No registrado"}
-                </p>
-              </div>
-
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <div className="border-b border-slate-100 px-6 py-4">
+              <h2 className="font-title text-lg font-semibold text-slate-800">
+                Horario laboral
+              </h2>
             </div>
 
+            {noSchedule || !schedule ? (
+              <div className="px-6 py-6">
+                <p className="text-sm text-slate-500">
+                  No tienes un horario activo asignado.
+                </p>
+                <p className="mt-2 text-sm text-slate-400">
+                  Tu horario es administrado por la clínica.
+                </p>
+              </div>
+            ) : (
+              <div className="px-6 py-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Jornada
+                    </p>
+                    <p className="mt-1 font-medium text-slate-800">
+                      Lunes a viernes
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Horario
+                    </p>
+                    <p className="mt-1 font-medium text-slate-800">
+                      {schedule.startTime} — {schedule.endTime}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Pausa
+                    </p>
+                    <p className="mt-1 font-medium text-slate-800">
+                      {schedule.breakStart && schedule.breakEnd
+                        ? `${schedule.breakStart} — ${schedule.breakEnd}`
+                        : "Sin pausa"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Estado
+                    </p>
+                    <p className="mt-1 font-medium text-slate-800">
+                      {schedule.active ? "Activo" : "Inactivo"}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="mt-6 border-t border-slate-100 pt-4 text-sm text-slate-400">
+                  Tu horario es administrado por la clínica.
+                </p>
+              </div>
+            )}
           </div>
-
-          {/* =========================================
-              Editar nombre
-          ========================================= */}
-
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
-            <div>
-              <label
-                htmlFor="name"
-                className="block font-semibold mb-2"
-              >
-                Nombre
-              </label>
-
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) =>
-                  setName(e.target.value)
-                }
-                className="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="border rounded-lg px-6 py-2 bg-blue-700 text-white disabled:opacity-50"
-            >
-              {saving
-                ? "Guardando..."
-                : "Guardar cambios"}
-            </button>
-          </form>
-
         </div>
       )}
     </div>

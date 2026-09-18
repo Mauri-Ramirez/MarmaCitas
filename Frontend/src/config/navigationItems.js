@@ -5,6 +5,10 @@ export const navigationItems = {
       path: "/paciente",
     },
     {
+      label: "Agendar cita",
+      path: "/paciente/agendar",
+    },
+    {
       label: "Mis citas",
       path: "/paciente/citas",
     },
@@ -24,10 +28,6 @@ export const navigationItems = {
       path: "/odontologo/citas",
     },
     {
-      label: "Mi horario",
-      path: "/odontologo/horario",
-    },
-    {
       label: "Perfil",
       path: "/odontologo/perfil",
     },
@@ -37,6 +37,10 @@ export const navigationItems = {
     {
       label: "Inicio",
       path: "/recepcion",
+    },
+    {
+      label: "Agendar cita",
+      path: "/recepcion/citas/agendar",
     },
     {
       label: "Citas",
@@ -62,6 +66,10 @@ export const navigationItems = {
       path: "/admin",
     },
     {
+      label: "Agendar cita",
+      path: "/admin/citas/agendar",
+    },
+    {
       label: "Usuarios",
       path: "/admin/usuarios",
     },
@@ -70,12 +78,8 @@ export const navigationItems = {
       path: "/admin/odontologos",
     },
     {
-      label: "Especialidades",
-      path: "/admin/especialidades",
-    },
-    {
-      label: "Servicios",
-      path: "/admin/servicios",
+      label: "Catálogo",
+      path: "/admin/catalogo",
     },
     {
       label: "Citas",

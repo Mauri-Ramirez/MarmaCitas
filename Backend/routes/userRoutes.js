@@ -4,8 +4,11 @@ import {
   createPatient,
   getPatientById,
   getPatients,
+  getUsers,
   getMyProfile,
   updateMyProfile,
+  updatePatient,
+  setUserActive,
 } from "../controllers/userController.js";
 
 import verifyToken from "../middlewares/authMiddleware.js";
@@ -55,6 +58,19 @@ router.put("/me", verifyToken, updateMyProfile);
  * =====================================================
  */
 
+// Obtener usuarios con filtros (listado general)
+// Acceso: administrador
+router.get("/", verifyToken, requireRole("admin"), getUsers);
+
+// Activar/desactivar un usuario (gestión administrativa)
+// Acceso: administrador
+router.patch(
+  "/:id/active",
+  verifyToken,
+  requireRole("admin"),
+  setUserActive,
+);
+
 router.get(
   "/patients",
   verifyToken,
@@ -67,6 +83,14 @@ router.get(
   verifyToken,
   requireRole("receptionist", "admin"),
   getPatientById,
+);
+
+// Actualizar datos básicos de un paciente
+router.put(
+  "/patients/:id",
+  verifyToken,
+  requireRole("receptionist", "admin"),
+  updatePatient,
 );
 
 router.post(

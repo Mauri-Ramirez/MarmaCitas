@@ -92,6 +92,15 @@ function DoctorSchedule() {
             </div>
 
             <div>
+              <p className="font-semibold">Pausa</p>
+              <p>
+                {schedule.breakStart && schedule.breakEnd
+                  ? `${schedule.breakStart} — ${schedule.breakEnd}`
+                  : "Sin pausa"}
+              </p>
+            </div>
+
+            <div>
               <p className="font-semibold">Estado</p>
               <p>{schedule.active ? "Activo" : "Inactivo"}</p>
             </div>

@@ -1,9 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { loginRequest } from "../services/authService";
 import { getMyProfile } from "../services/userService";
-
-export const AuthContext = createContext();
+import { AuthContext } from "./AuthContext.js";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -66,6 +65,29 @@ export function AuthProvider({ children }) {
 
   /**
    * =====================================================
+   * Actualizar datos del usuario en sesión
+   * -----------------------------------------------------
+   * Se usa tras actualizar el perfil propio, para que
+   * Navbar y Sidebar reflejen el nuevo nombre sin volver
+   * a autenticar.
+   * =====================================================
+   */
+  const updateUser = (updatedFields) => {
+    setUser((currentUser) => {
+      if (!currentUser) {
+        return currentUser;
+      }
+
+      const mergedUser = { ...currentUser, ...updatedFields };
+
+      localStorage.setItem("user", JSON.stringify(mergedUser));
+
+      return mergedUser;
+    });
+  };
+
+  /**
+   * =====================================================
    * Logout
    * =====================================================
    */
@@ -82,6 +104,7 @@ export function AuthProvider({ children }) {
         user,
         login,
         logout,
+        updateUser,
         loading,
       }}
     >

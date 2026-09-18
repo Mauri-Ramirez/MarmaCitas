@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Button from "../../components/common/Button";
 import { AuthContext } from "../../context/AuthContext";
@@ -10,9 +10,12 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setError("");
 
     try {
       const user = await login(email, password);
@@ -28,9 +31,9 @@ function Login() {
         navigate("/admin");
       }
     } catch (error) {
-      alert(
+      setError(
         error.response?.data?.message ||
-          "Error en login",
+          "Error en el inicio de sesión.",
       );
     }
   };
@@ -42,6 +45,10 @@ function Login() {
         <h2 className="text-2xl font-bold text-center text-primary mb-6">
           Iniciar sesión
         </h2>
+
+        {error && (
+          <p className="mb-4 text-red-600">{error}</p>
+        )}
 
         <form
           onSubmit={handleSubmit}
@@ -81,13 +88,13 @@ function Login() {
         <p className="text-sm text-center mt-4">
           ¿No tienes cuenta?
 
-          <a
-            href="/registro"
+          <Link
+            to="/registro"
             className="text-primary font-semibold"
           >
             {" "}
             Regístrate
-          </a>
+          </Link>
         </p>
 
       </div>

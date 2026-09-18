@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Specialty from "../models/Specialty.js";
+import Appointment from "../models/Appointment.js";
 import bcrypt from "bcryptjs";
 
 /**
@@ -270,6 +271,26 @@ export const deactivateDoctor = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({
         message: "Odontólogo no encontrado.",
+      });
+    }
+
+    // =================================================
+    // No se puede desactivar un odontólogo con citas que
+    // todavía requieren atención: en curso o confirmadas
+    // y futuras.
+    // =================================================
+
+    const blockingAppointments = await Appointment.countDocuments({
+      doctor: doctor._id,
+      $or: [
+        { status: "in_progress" },
+        { status: "confirmed", dateTime: { $gt: new Date() } },
+      ],
+    });
+
+    if (blockingAppointments > 0) {
+      return res.status(409).json({
+        message: `El odontólogo tiene ${blockingAppointments} cita(s) pendiente(s) o futura(s). Gestiona esas citas antes de desactivarlo.`,
       });
     }
 

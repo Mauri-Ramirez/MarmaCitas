@@ -18,10 +18,18 @@ import BookAppointment from "../pages/patient/BookAppointment";
 import PatientProfile from "../pages/patient/PatientProfile";
 import DoctorProfile from "../pages/doctor/DoctorProfile";
 import DoctorAppointments from "../pages/doctor/DoctorAppointments";
-import DoctorSchedule from "../pages/doctor/DoctorSchedule";
 import ReceptionProfile from "../pages/reception/ReceptionProfile";
 import ReceptionPatients from "../pages/reception/ReceptionPatients";
+import ReceptionAppointments from "../pages/reception/ReceptionAppointments";
+import AppointmentBookingPage from "../pages/appointments/AppointmentBookingPage";
+import ReceptionDoctors from "../pages/reception/ReceptionDoctors";
 import AdminProfile from "../pages/admin/AdminProfile";
+import AdminSpecialties from "../pages/admin/AdminSpecialties";
+import AdminServices from "../pages/admin/AdminServices";
+import AdminCatalog from "../pages/admin/AdminCatalog";
+import AdminDoctors from "../pages/admin/AdminDoctors";
+import AdminAppointments from "../pages/admin/AdminAppointments";
+import AdminUsers from "../pages/admin/AdminUsers";
 
 
 // Layouts
@@ -174,12 +182,34 @@ element={
 />
 
 <Route
-  path="/odontologo/horario"
+  path="/recepcion/citas"
   element={
-    <PrivateRoute allowedRoles={["doctor"]}>
-      <DoctorLayout>
-        <DoctorSchedule />
-      </DoctorLayout>
+    <PrivateRoute allowedRoles={["receptionist"]}>
+      <ReceptionLayout>
+        <ReceptionAppointments />
+      </ReceptionLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/recepcion/citas/agendar"
+  element={
+    <PrivateRoute allowedRoles={["receptionist"]}>
+      <ReceptionLayout>
+        <AppointmentBookingPage />
+      </ReceptionLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/recepcion/odontologos"
+  element={
+    <PrivateRoute allowedRoles={["receptionist"]}>
+      <ReceptionLayout>
+        <ReceptionDoctors />
+      </ReceptionLayout>
     </PrivateRoute>
   }
 />
@@ -205,7 +235,84 @@ element={
     </PrivateRoute>
   }
 />
-      
+
+<Route
+  path="/admin/catalogo"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminCatalog />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/especialidades"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminSpecialties />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/servicios"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminServices />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/odontologos"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminDoctors />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/citas"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminAppointments />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/citas/agendar"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AppointmentBookingPage />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
+<Route
+  path="/admin/usuarios"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <AdminLayout>
+        <AdminUsers />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
+
    
   <Route
   path="/paciente/citas"

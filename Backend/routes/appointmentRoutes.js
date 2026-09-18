@@ -7,13 +7,17 @@ import {
   rescheduleAppointment,
   cancelAppointment,
   updateAppointmentStatus,
+  updateAppointmentNotes,
   getMyAppointments,
   getMyDoctorAppointments,
   getAppointmentAvailability,
+  uploadAppointmentAttachments,
+  downloadAppointmentAttachment,
 } from "../controllers/appointmentController.js";
 
 import verifyToken from "../middlewares/authMiddleware.js";
 import requireRole from "../middlewares/roleMiddleware.js";
+import { uploadAppointmentFiles } from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -140,6 +144,48 @@ router.patch(
   verifyToken,
   requireRole("doctor", "receptionist", "admin"),
   updateAppointmentStatus,
+);
+
+/**
+ * =====================================================
+ * Actualizar notas de atención de una cita
+ * -----------------------------------------------------
+ * Acceso:
+ * Odontólogo (solo citas propias)
+ * =====================================================
+ */
+
+router.patch(
+  "/:id/notes",
+  verifyToken,
+  requireRole("doctor"),
+  updateAppointmentNotes,
+);
+
+/**
+ * =====================================================
+ * Archivos clínicos de una cita
+ * -----------------------------------------------------
+ * Acceso:
+ * Odontólogo (solo citas propias)
+ * =====================================================
+ */
+
+// Subir archivos (PDF, JPG, JPEG, PNG) a una cita
+router.post(
+  "/:id/attachments",
+  verifyToken,
+  requireRole("doctor"),
+  uploadAppointmentFiles,
+  uploadAppointmentAttachments,
+);
+
+// Ver/descargar un archivo adjunto (autenticado)
+router.get(
+  "/:id/attachments/:attachmentId",
+  verifyToken,
+  requireRole("doctor"),
+  downloadAppointmentAttachment,
 );
 
 export default router;

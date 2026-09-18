@@ -5,6 +5,9 @@ import {
   rescheduleAppointment,
 } from "../../services/appointmentService";
 
+import CalendarDatePicker from "../../components/appointments/CalendarDatePicker";
+import SlotGrid from "../../components/appointments/SlotGrid";
+
 function AppointmentReschedule({ appointment, onRescheduled }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
@@ -121,19 +124,24 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
   };
 
   return (
-    <div className="mt-4 border rounded-lg p-4 bg-gray-50">
+    <div className="mt-5 rounded-2xl border border-primary/20 bg-primaryLight/30 p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="font-title text-lg font-semibold text-slate-800">
+          Reprogramar cita
+        </h3>
 
-      <h3 className="text-lg font-semibold mb-4">
-        Reprogramar cita
-      </h3>
+        <span className="rounded-full bg-primaryLight px-3 py-1 text-xs font-semibold text-primary">
+          Nueva fecha
+        </span>
+      </div>
 
       {/* =========================================
           Información de la cita actual
       ========================================= */}
 
-      <div className="mb-4">
+      <div className="mb-5 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
         <p>
-          <strong>Fecha actual:</strong>{" "}
+          <strong className="text-slate-800">Fecha actual:</strong>{" "}
           {new Date(
             appointment.dateTime,
           ).toLocaleString("es-CO", {
@@ -141,13 +149,13 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
           })}
         </p>
 
-        <p>
-          <strong>Odontólogo:</strong>{" "}
+        <p className="mt-1">
+          <strong className="text-slate-800">Odontólogo:</strong>{" "}
           {appointment.doctor?.name}
         </p>
 
-        <p>
-          <strong>Servicio:</strong>{" "}
+        <p className="mt-1">
+          <strong className="text-slate-800">Servicio:</strong>{" "}
           {appointment.service?.name ||
             appointment.serviceSnapshot?.name}
         </p>
@@ -158,21 +166,13 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
       ========================================= */}
 
       <div className="mb-4">
-        <label
-          htmlFor={`reschedule-date-${appointment._id}`}
-          className="block font-semibold mb-2"
-        >
+        <label className="mb-2 block font-semibold text-slate-700">
           Nueva fecha
         </label>
 
-        <input
-          id={`reschedule-date-${appointment._id}`}
-          type="date"
+        <CalendarDatePicker
           value={selectedDate}
-          onChange={(e) =>
-            setSelectedDate(e.target.value)
-          }
-          className="w-full border rounded-lg px-4 py-2"
+          onChange={setSelectedDate}
         />
       </div>
 
@@ -181,42 +181,29 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
       ========================================= */}
 
       <div className="mb-4">
-        <h4 className="font-semibold mb-2">
+        <h4 className="mb-2 font-semibold text-slate-700">
           Horarios disponibles
         </h4>
 
         {!selectedDate ? (
-          <p>
+          <p className="text-sm text-slate-500">
             Selecciona una nueva fecha para consultar
             los horarios.
           </p>
         ) : loadingAvailability ? (
-          <p>
+          <p className="text-sm text-slate-500">
             Consultando disponibilidad...
           </p>
         ) : availableSlots.length === 0 ? (
-          <p>
+          <p className="text-sm text-slate-500">
             No hay horarios disponibles para esta fecha.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-2">
-            {availableSlots.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() =>
-                  setSelectedSlot(slot)
-                }
-                className={`border rounded-lg px-4 py-2 ${
-                  selectedSlot === slot
-                    ? "bg-blue-700 text-white"
-                    : "bg-white"
-                }`}
-              >
-                {slot}
-              </button>
-            ))}
-          </div>
+          <SlotGrid
+            slots={availableSlots}
+            selectedSlot={selectedSlot}
+            onSelect={setSelectedSlot}
+          />
         )}
       </div>
 
@@ -225,14 +212,13 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
       ========================================= */}
 
       {selectedSlot && (
-        <div className="mb-4">
-          <p className="font-semibold">
-            Nuevo horario seleccionado:{" "}
-            {selectedSlot}
+        <div className="mb-4 rounded-xl border border-primary/20 bg-white px-4 py-3 text-sm">
+          <p className="font-medium text-slate-800">
+            Nuevo horario: {selectedSlot}
           </p>
 
-          <p>
-            Nueva fecha: {selectedDate}
+          <p className="mt-0.5 text-slate-500">
+            Fecha: {selectedDate}
           </p>
         </div>
       )}
@@ -242,7 +228,7 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
       ========================================= */}
 
       {error && (
-        <p className="mb-4 text-red-600">
+        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
           {error}
         </p>
       )}
@@ -252,7 +238,7 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
       ========================================= */}
 
       {successMessage && (
-        <p className="mb-4 font-semibold">
+        <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
           {successMessage}
         </p>
       )}
@@ -269,7 +255,7 @@ function AppointmentReschedule({ appointment, onRescheduled }) {
           !selectedSlot ||
           rescheduling
         }
-        className="border rounded-lg px-6 py-2 bg-blue-700 text-white disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 disabled:opacity-50"
       >
         {rescheduling
           ? "Reprogramando..."

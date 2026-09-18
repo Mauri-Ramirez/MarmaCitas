@@ -3,6 +3,7 @@ import express from "express";
 import {
   getSchedules,
   getMySchedule,
+  getScheduleByDoctor,
   getScheduleById,
   createSchedule,
   updateSchedule,
@@ -33,6 +34,15 @@ router.get("/", verifyToken, requireRole("admin"), getSchedules);
 
 // Obtener horario propio del odontólogo autenticado
 router.get("/my", verifyToken, requireRole("doctor"), getMySchedule);
+
+// Obtener horario activo de un odontólogo por ID
+// Acceso: recepción y administrador
+router.get(
+  "/doctor/:doctorId",
+  verifyToken,
+  requireRole("receptionist", "admin"),
+  getScheduleByDoctor,
+);
 
 // Obtener horario por ID
 router.get("/:id", verifyToken, requireRole("admin"), getScheduleById);

@@ -23,3 +23,14 @@ export const createPatient = async (data) => {
 
   return res.data;
 };
+
+// =====================================================
+// Actualizar datos básicos de un paciente
+// (recepción y administrador)
+// =====================================================
+
+export const updatePatient = async (id, data) => {
+  const res = await axios.put(`/users/patients/${id}`, data);
+
+  return res.data;
+};
