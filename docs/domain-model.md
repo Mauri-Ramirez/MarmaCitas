@@ -1,340 +1,98 @@
-# Modelo de Dominio - MarmaCitas
+# Modelo de Dominio — MarmaCitas
 
-## Objetivo
+Entidades reales del sistema y sus relaciones (verificadas en el código actual).
 
-Representar las entidades principales del sistema y las relaciones existentes entre ellas desde el punto de vista del negocio.
+## Entidades
 
----
+### User
 
-# Entidades del dominio
+Usuario compartido para los cuatro roles (`patient`, `doctor`, `receptionist`, `admin`).
 
-## User
+Atributos principales:
 
-Representa a todas las personas que interactúan con el sistema.
+- `name`
+- `email` (único)
+- `password` (bcrypt)
+- `role`
+- `active`
+- `timestamps`
 
-Dependiendo de su rol, un usuario puede ser:
+Datos médicos del paciente (en `User`):
 
-- Administrador
-- Recepcionista
-- Odontólogo
-- Paciente
+- `allergies` (máx. 300)
+- `medicalNotes` (máx. 1000)
+- Editables solo por el paciente vía `PUT /users/me`; visibles para recepción/admin y para el
+  odontólogo en su agenda.
 
-### Atributos principales
+Información profesional (solo odontólogos):
 
-- Nombre
-- Correo electrónico
-- Contraseña
-- Rol
-- Estado (activo/inactivo)
+- `professionalLicense` (única)
+- `phone`
+- `specialty` (ref → Specialty)
 
-### Información profesional (solo para odontólogos)
+Campo técnico:
 
-- Tarjeta profesional
-- Teléfono de contacto
-- Especialidad
+- `appointmentLockVersion` (contador para serializar transacciones de citas; `select: false`).
 
----
+### Specialty
 
-## Specialty
+- `name` (único)
+- `description`
+- `active` (soft delete)
+- `timestamps`
 
-Representa las especialidades odontológicas ofrecidas por el consultorio.
+### Service
 
-Ejemplos:
+- `name` (máx. 100), `description` (máx. 300)
+- `duration` (minutos, >= 1)
+- `price` (>= 1)
+- `specialty` (ref → Specialty, obligatoria)
+- `active` (soft delete)
+- `timestamps`
 
-- Ortodoncia
-- Endodoncia
-- Periodoncia
-- Odontología General
+### Schedule
 
----
+- `doctor` (ref → User)
+- `startTime`, `endTime` (HH:mm)
+- `breakStart`, `breakEnd` (opcionales)
+- `active` (soft delete)
+- Un solo horario **activo** por odontólogo (índice único parcial).
+- `timestamps`
 
-## Service
+### Appointment
 
-Representa los tratamientos o procedimientos que ofrece el consultorio.
+- `patient`, `doctor` (ref → User), `service` (ref → Service)
+- `dateTime`
+- `status`: `confirmed | in_progress | completed | cancelled | no_show`
+- `paymentStatus`: `pending | paid` (sin funcionalidad de pago)
+- `serviceSnapshot`: `{ serviceId, name, duration, price }`
+- `reason` (motivo de consulta)
+- `clinicalNotes` (nota de atención del odontólogo; máx. 2000 en el controller)
+- `attachments`: `[{ filename, storedName, mimeType, size, uploadedBy, uploadedAt }]`
+- Auditoría: `createdBy`, `lastStatusChangedBy`, `timestamps`
+- `optimisticConcurrency` (control optimista por `__v`)
 
-Cada servicio pertenece obligatoriamente a una especialidad.
+## Relaciones
 
-### Atributos principales
-
-- Nombre
-- Descripción
-- Duración
-- Precio
-- Especialidad
-- Estado
-
-Ejemplos:
-
-- Valoración
-- Limpieza Dental
-- Blanqueamiento Dental
-
----
-
-## Schedule
-
-Representa el horario laboral asignado a un odontólogo.
-
-Cada odontólogo puede tener únicamente un horario activo.
-
-Los horarios representan la jornada laboral del consultorio de lunes a viernes.
-
-### Atributos principales
-
-- Odontólogo
-- Hora de inicio
-- Hora de finalización
-- Estado
-
----
-
-## Appointment
-
-Representa una cita odontológica.
-
-Relaciona:
-
-- Paciente
-- Odontólogo
-- Servicio
-- Fecha y hora
-- Estado de la cita
-- Estado del pago
-
-La fecha y hora se representan mediante un único campo `dateTime`.
-
-### Snapshot del servicio
-
-La cita conserva una instantánea del servicio utilizado al momento de la reserva:
-
-- ID del servicio
-- Nombre
-- Duración
-- Precio
-
-Esto permite conservar la información histórica de la cita aunque el servicio cambie posteriormente.
-
-### Auditoría
-
-La cita conserva información sobre:
-
-- Usuario que creó la cita.
-- Usuario que realizó el último cambio de estado.
-- Fecha de creación.
-- Fecha de última modificación.
-
----
-
-## Payment
-
-Representará la gestión de pagos asociados a las citas.
-
-En la versión MVP, el pago será un módulo independiente y no condicionará la creación de una cita.
-
-El estado del pago podrá consultarse desde la cita mediante `paymentStatus`.
-
-La entidad Payment se implementará posteriormente.
-
----
-
-## Clinical Record
-
-Representará el historial clínico del paciente.
-
-Se utilizará para almacenar información clínica generada durante la atención odontológica.
-
-Esta entidad se implementará posteriormente.
-
----
-
-# Relaciones del dominio
-
-## User (Doctor) → Specialty
-
-Relación:
-
-Uno a Uno (1:1)
-
-Todo odontólogo pertenece a una única especialidad.
-
----
-
-## Specialty → Service
-
-Relación:
-
-Uno a Muchos (1:N)
-
-Una especialidad puede ofrecer múltiples servicios.
-
-Cada servicio pertenece únicamente a una especialidad.
-
----
-
-## User (Doctor) → Schedule
-
-Relación:
-
-Uno a Uno (1:1) para el horario activo.
-
-Un odontólogo puede tener únicamente un horario activo.
-
-Un horario pertenece únicamente a un odontólogo.
-
-Aunque puedan existir registros históricos desactivados debido al Soft Delete, solo puede existir un horario activo para cada odontólogo.
-
----
-
-## User (Doctor) → Appointment
-
-Relación:
-
-Uno a Muchos (1:N)
-
-Un odontólogo puede atender múltiples citas.
-
-Cada cita pertenece a un único odontólogo.
-
----
-
-## User (Patient) → Appointment
-
-Relación:
-
-Uno a Muchos (1:N)
-
-Un paciente puede registrar múltiples citas.
-
-Cada cita pertenece a un único paciente.
-
----
-
-## Service → Appointment
-
-Relación:
-
-Uno a Muchos (1:N)
-
-Un servicio puede estar asociado a múltiples citas.
-
-Cada cita utiliza un único servicio.
-
-La cita conserva además un snapshot de la información del servicio.
-
----
-
-## Appointment → Payment
-
-Relación:
-
-Uno a Uno (1:1) conceptual
-
-Una cita puede tener información de pago asociada.
-
-En el MVP, el pago se gestiona de manera independiente y la cita mantiene `paymentStatus` para conocer su estado actual.
-
----
-
-## Appointment → Clinical Record
-
-Relación:
-
-Uno a Uno (1:1) conceptual
-
-Una cita completada puede generar o actualizar información en el historial clínico del paciente.
-
----
-
-# Reglas importantes del dominio
-
-## Especialidad del odontólogo y servicio
-
-El servicio seleccionado para una cita debe pertenecer a la misma especialidad del odontólogo.
-
-```text
-Doctor.specialty
-       ==
-Service.specialty
-```
-
----
+- `User(doctor)` 1—1 `Specialty` (una especialidad por odontólogo).
+- `Specialty` 1—N `Service`.
+- `User(doctor)` 1—1 `Schedule` (un horario activo; históricos desactivados pueden coexistir).
+- `User(doctor)` 1—N `Appointment`.
+- `User(patient)` 1—N `Appointment`.
+- `Service` 1—N `Appointment` (con snapshot).
+- `Appointment` → `Payment`: conceptual (solo `paymentStatus`).
+- `Appointment` → historia clínica: no implementada.
 
 ## Disponibilidad
 
-La disponibilidad de una cita depende de:
+La disponibilidad de una cita depende de: horario activo del odontólogo, fecha/hora solicitada,
+duración del servicio y citas existentes del odontólogo. El espacio completo de la duración debe estar
+libre. La jornada efectiva es la intersección del horario del odontólogo con la jornada clínica
+(08–12 / 14–17). Los conflictos del paciente se validan al crear la cita.
 
-1. Horario activo del odontólogo.
-2. Fecha y hora solicitada.
-3. Duración del servicio.
-4. Citas existentes del odontólogo.
-5. Citas existentes del paciente.
+## Estado de implementación
 
-El espacio completo correspondiente a la duración del servicio debe estar disponible.
+Implementado: User, autenticación, roles, Specialty, Service, Doctor (sobre User), Schedule,
+Appointment (incluidos reason, clinicalNotes, attachments y control de concurrencia).
 
----
-
-# Modelo conceptual
-
-```text
-                           User
-          ┌────────────────────────────────┐
-          │ name                           │
-          │ email                          │
-          │ password                       │
-          │ role                           │
-          │ active                         │
-          │--------------------------------│
-          │ professionalLicense (Doctor)  │
-          │ phone (Doctor)                │
-          │ specialty (Doctor)            │
-          └────────────────────────────────┘
-                    │              │
-             Patient│              │Doctor
-                    │              │
-                    │              ├───────────────┐
-                    │              │               │
-                    │              ▼               ▼
-                    │         Specialty         Schedule
-                    │              │
-                    │              ▼
-                    │           Service
-                    │              │
-                    │              │
-                    └───────┐      │
-                            ▼      ▼
-                         Appointment
-                         │    │    │
-                         │    │    ├── dateTime
-                         │    │    ├── status
-                         │    │    ├── paymentStatus
-                         │    │    └── serviceSnapshot
-                         │    │
-                         │    ├──────────────► Payment
-                         │
-                         └──────────────────► Clinical Record
-```
-
----
-
-# Estado actual del dominio
-
-## Implementado
-
-- User
-- Autenticación
-- Roles
-- Specialty
-- Service
-- Doctor (ampliación de User)
-- Schedule
-
-## En desarrollo
-
-- Appointment
-
-## Pendiente
-
-- Payment
-- Clinical Record
-- Notificaciones
-- Integraciones externas
+No implementado (futuro): Payment funcional, Clinical Record global, odontograma, notificaciones.

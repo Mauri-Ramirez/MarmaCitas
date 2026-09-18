@@ -1,318 +1,110 @@
-# Reglas de Negocio - Gestión de Citas
+# Reglas de Negocio — Gestión de Citas
 
-## Objetivo
+Comportamiento real verificado en el código actual (backend y frontend).
 
-Definir las reglas funcionales del módulo de gestión de citas de MarmaCitas para un consultorio odontológico pequeño.
-
----
-
-# Actores
+## Actores
 
 - Paciente
 - Recepcionista
 - Odontólogo
 - Administrador
 
----
+## Flujo de reserva
 
-# Creación de citas
+1. El cliente obtiene servicios y odontólogos activos.
+2. La interfaz muestra **especialidad → servicio → fecha → hora → odontólogo**: se consulta la
+   disponibilidad de los odontólogos de la especialidad del servicio (unión de slots) y el odontólogo
+   se elige después de la hora.
+3. El backend valida al crear la cita: fecha futura, lunes a viernes, jornada efectiva (horario del
+   doctor ∩ jornada clínica 08–12/14–17), duración completa del servicio, actores activos, servicio
+   activo de la misma especialidad y sin solapamientos del doctor ni del paciente.
+4. La cita queda en estado `confirmed` y pago `pending`. Se conserva snapshot del servicio y el
+   `reason` (motivo de consulta) escrito por el paciente (o por recepción/admin).
 
-Una cita debe tener obligatoriamente:
+## Disponibilidad
 
-- Paciente
-- Odontólogo
-- Servicio odontológico
-- Fecha y hora
-- Estado de la cita
-- Estado del pago
+- Cadencia fija de 15 minutos; la duración del servicio solo define la longitud y el recorte final.
+- Días hábiles (lunes a viernes) dentro de la jornada efectiva; se omiten horas ya pasadas.
+- Se descuentan las citas `confirmed` e `in_progress` del odontólogo.
+- La disponibilidad **no** anticipa los conflictos del paciente (se validan al crear la cita).
 
-No puede existir una cita sin alguno de estos datos.
+## Estados
 
-La fecha y hora de la cita se almacenarán mediante un único valor `dateTime`.
+- `confirmed` — Confirmada
+- `in_progress` — En atención
+- `completed` — Completada
+- `cancelled` — Cancelada
+- `no_show` — No asistió
 
----
+Transiciones:
 
-# Flujo de Reserva
+- `confirmed` → `in_progress` (admite hasta 15 minutos de anticipación), `cancelled`, `no_show`.
+- `in_progress` → `completed`.
+- `no_show` solo se puede marcar desde la hora exacta de la cita (sin tolerancia).
+- Estados terminales (`completed`, `cancelled`, `no_show`) no cambian.
 
-1. El paciente inicia sesión.
-2. Selecciona el servicio odontológico.
-3. El sistema identifica la especialidad requerida.
-4. El sistema muestra únicamente los odontólogos de esa especialidad.
-5. El paciente selecciona el odontólogo.
-6. El sistema consulta la disponibilidad.
-7. El paciente selecciona fecha y hora.
-8. Confirma la reserva.
-9. La cita queda inmediatamente en estado **Confirmada**.
-10. El estado del pago se gestiona de forma independiente.
+## Cancelación
 
----
+- **Paciente:** solo sus propias citas y con un mínimo de **24 horas** de anticipación.
+- **Recepción y admin:** pueden cancelar citas (incluidas las que faltan menos de 24 horas).
+- **Odontólogo:** **no puede cancelar** citas; el endpoint de cambio de estado lo impide
+  (`PATCH /appointments/:id/status` no admite `confirmed → cancelled` para el rol doctor).
+- Una cita ya completada, cancelada, marcada como no asistió o en curso no puede cancelarse por el
+  endpoint de cancelación.
 
-# Validaciones para crear una cita
+## Reprogramación
 
-Para crear una cita deben cumplirse las siguientes condiciones:
+- Pueden reprogramar: paciente (propias), recepción y admin. El odontólogo no.
+- Solo citas `confirmed`.
+- La **cita original debe ser futura** (una cita pasada no se reprograma).
+- La nueva fecha debe ser futura y cumplir jornada, horario, duración, servicio y conflictos.
+- Para el **paciente**, la cita original debe tener al menos **24 horas** de anticipación (evita
+  eludir la regla de cancelación reprogramando y cancelando). Recepción y admin no tienen esa
+  restricción de anticipación.
+- No se registra quién realizó la reprogramación.
 
-- El paciente debe existir y estar activo.
-- El odontólogo debe existir y estar activo.
-- El usuario asociado al odontólogo debe tener rol `doctor`.
-- El servicio debe existir y estar activo.
-- La especialidad del servicio debe coincidir con la especialidad del odontólogo.
-- La fecha y hora de la cita no pueden encontrarse en el pasado.
-- La cita debe encontrarse dentro del horario laboral del odontólogo.
-- El espacio completo correspondiente a la duración del servicio debe encontrarse disponible.
-- El paciente no puede tener otra cita que se solape con el mismo período.
-- El odontólogo no puede tener otra cita que se solape con el mismo período.
+## No_show
 
----
+- Lo pueden marcar el odontólogo (solo sus propias citas), recepción y admin.
+- Solo desde la **hora exacta** de la cita; no se puede marcar antes.
+- La tolerancia de 15 minutos existe únicamente para iniciar atención (`in_progress`).
 
-# Disponibilidad
+## Notas clínicas
 
-Un odontólogo no puede tener dos citas que se solapen.
+- Endpoint: `PATCH /appointments/:id/notes` (solo rol doctor y solo la cita del doctor).
+- Solo se pueden crear/modificar mientras la cita está `in_progress`. Al pasar a `completed`, o en
+  `confirmed`/`cancelled`/`no_show`, quedan cerradas (rechazo 400).
+- Máximo 2000 caracteres. No hay auditoría específica de autor/fecha de la nota.
+- El paciente no recibe `clinicalNotes` desde la API.
 
-Un paciente no puede tener dos citas que se solapen.
+## Motivo de consulta (`reason`)
 
-La duración del servicio determina el espacio de tiempo ocupado por la cita.
+- Se almacena separado de la nota clínica. Lo escribe el paciente al agendar (o recepción/admin).
+- Es visible para recepción, admin y odontólogo; el paciente lo recibe en sus citas.
 
-Ejemplo:
+## Adjuntos clínicos
 
-```text
-Servicio: Valoración
-Duración: 30 minutos
+- Solo el doctor de la cita y solo mientras está `in_progress`.
+- Formatos PDF, JPG, JPEG y PNG; máx. 5 archivos por cita; máx. 10 MB por archivo.
+- No hay servido público: se descargan por endpoint autenticado.
 
-Cita:
-14:00 → 14:30
-```
+## Pago
 
-Una cita que comience a las `14:15` no estará permitida porque existe un solapamiento.
+- Existe solo `paymentStatus` (`pending`/`paid`) como campo de la cita.
+- **No** existe funcionalidad para registrar o confirmar pagos (sin endpoint ni interfaz).
 
-Una cita que comience a las `14:30` podrá ser permitida si cumple las demás reglas de disponibilidad.
+## Especialidad
 
----
+- El servicio seleccionado debe pertenecer a la misma especialidad del odontólogo.
 
-# Horario laboral
+## Auditoría
 
-La cita debe encontrarse completamente dentro del horario laboral activo del odontólogo.
+- Cada cita conserva: fecha de creación, fecha de última modificación, usuario que la creó
+  (`createdBy`) y usuario del último cambio de estado (`lastStatusChangedBy`).
+- No se registra quién reprograma ni quién edita notas.
 
-Ejemplo:
+## Historial
 
-```text
-Horario del odontólogo:
-
-08:00 → 17:00
-```
-
-Una cita de 30 minutos a las:
-
-```text
-16:30 → 17:00
-```
-
-es válida.
-
-Una cita de 30 minutos a las:
-
-```text
-16:45 → 17:15
-```
-
-no es válida porque supera el horario laboral.
-
-Los horarios del consultorio corresponden a los días laborales de lunes a viernes.
-
----
-
-# Especialidad
-
-El servicio seleccionado debe pertenecer a la misma especialidad del odontólogo.
-
-Ejemplo válido:
-
-```text
-Odontólogo
-Especialidad: Ortodoncia
-
-Servicio
-Especialidad: Ortodoncia
-```
-
-Ejemplo inválido:
-
-```text
-Odontólogo
-Especialidad: Ortodoncia
-
-Servicio
-Especialidad: Endodoncia
-```
-
-En este caso la cita no podrá ser creada.
-
----
-
-# Atención
-
-Cuando llega la fecha de la cita:
-
-1. El odontólogo inicia la atención.
-2. La cita cambia al estado **En curso**.
-3. El odontólogo registra el diagnóstico y tratamiento.
-4. La cita cambia al estado **Completada**.
-5. Se genera o actualiza el historial clínico.
-
----
-
-# Estados de una cita
-
-- `confirmed` - Confirmada
-- `in_progress` - En curso
-- `completed` - Completada
-- `cancelled` - Cancelada
-- `no_show` - No asistió
-
----
-
-# Flujo de Estados
-
-```text
-Confirmada
-│
-├── En curso
-│   │
-│   └── Completada
-│
-├── Cancelada
-│
-└── No asistió
-```
-
-Una cita cancelada o marcada como no asistió no vuelve al estado Confirmada mediante el flujo normal.
-
----
-
-# Estado del pago
-
-El estado del pago se manejará independientemente del estado de la cita.
-
-Estados iniciales:
-
-- `pending` - Pendiente
-- `paid` - Pagado
-
-La creación de una cita no depende de que el pago haya sido realizado previamente.
-
----
-
-# Pago
-
-En la versión MVP:
-
-- El pago será un módulo independiente.
-- El pago no condiciona la creación de la cita.
-- La cita puede crearse aunque el pago se encuentre pendiente.
-- La recepcionista podrá registrar o confirmar posteriormente el pago.
-- `paymentStatus` permitirá conocer el estado actual del pago asociado a la cita.
-
-En versiones futuras se podrá implementar pago anticipado en línea.
-
----
-
-# Cancelación
-
-Puede cancelar:
-
-- Paciente
-- Recepcionista
-- Administrador
-
-No puede cancelar:
-
-- Odontólogo
-
-La cancelación debe realizarse con un mínimo de **24 horas de anticipación**.
-
-Las citas canceladas permanecen almacenadas para mantener la trazabilidad.
-
----
-
-# Reprogramación
-
-Puede reprogramar:
-
-- Paciente
-- Recepcionista
-- Administrador
-
-Condiciones:
-
-- Debe existir disponibilidad para la nueva fecha y hora.
-- La nueva fecha debe encontrarse dentro del horario laboral del odontólogo.
-- El espacio completo correspondiente a la duración del servicio debe estar disponible.
-- No debe existir solapamiento con otra cita del paciente.
-- No debe existir solapamiento con otra cita del odontólogo.
-- La cita mantiene el estado **Confirmada**.
-- Se actualiza `dateTime`.
-- Se registra la modificación mediante los campos de auditoría correspondientes.
-
----
-
-# Historial
-
-Las citas nunca se eliminan físicamente.
-
-Las citas canceladas y las inasistencias permanecen registradas para mantener la trazabilidad del sistema.
-
----
-
-# Auditoría
-
-Cada cita conservará:
-
-- Fecha de creación.
-- Fecha de última modificación.
-- Usuario que creó la cita.
-- Usuario que realizó el último cambio de estado.
-
-Los campos de auditoría permitirán identificar quién realizó las principales acciones sobre la cita.
-
----
-
-# Servicio Odontológico
-
-Cada cita almacenará una instantánea (snapshot) del servicio utilizado al momento de crear la cita.
-
-El snapshot conservará:
-
-- `serviceId`
-- Nombre del servicio
-- Duración
-- Precio
-
-Esto garantiza conservar el historial de la cita incluso si posteriormente el servicio cambia de nombre, duración o precio.
-
----
-
-# Notas
-
-La cita podrá almacenar observaciones relacionadas con su gestión.
-
-Las notas clínicas propias de la atención odontológica serán gestionadas posteriormente mediante el módulo correspondiente al historial clínico y atención odontológica.
-
----
-
-# Notificaciones (Backlog)
-
-Enviar notificaciones cuando:
-
-- Se crea una cita.
-- Se cancela una cita.
-- Se reprograma una cita.
-- Se acerca la fecha de la cita.
-
----
-
-# Mejoras Futuras
-
-- Pago anticipado.
-- Integración con Google Calendar.
-- Confirmación por correo.
-- Recordatorios automáticos.
-- Integración con servicios de notificación.
+- Las citas no se eliminan físicamente (estados terminales conservan la trazabilidad).
+- El odontólogo ve "Atenciones anteriores" derivadas **solo de sus propias citas**; no es una historia
+  clínica global del paciente.
