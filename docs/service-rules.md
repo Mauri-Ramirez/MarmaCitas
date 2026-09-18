@@ -1,255 +1,56 @@
-# Reglas de Negocio - Servicios Odontológicos
+# Reglas de Negocio — Servicios Odontológicos
 
-## Objetivo
+Comportamiento real verificado en el código actual.
 
-Definir las reglas funcionales para la administración de los servicios odontológicos ofrecidos por el consultorio.
+## ¿Qué es un servicio?
 
----
+Un servicio representa un tratamiento o procedimiento odontológico que puede reservarse mediante una
+cita. Debe pertenecer obligatoriamente a una especialidad.
 
-# ¿Qué es un servicio?
+## Atributos
 
-Un servicio representa un tratamiento o procedimiento odontológico que puede ser reservado mediante una cita.
+- Nombre (obligatorio, máx. 100 caracteres).
+- Descripción (opcional, máx. 300).
+- Duración (minutos, obligatoria, mayor que cero).
+- Precio (obligatorio, mayor que cero).
+- Especialidad (obligatoria).
+- Estado (Activo/Inactivo) con soft delete.
 
-Ejemplos:
+## Relación con Specialty
 
-- Valoración
-- Limpieza Dental
-- Resina
-- Endodoncia
-- Ortodoncia
-- Blanqueamiento Dental
+Todo servicio pertenece a una única especialidad (ObjectId con populate). La especialidad debe existir
+y estar activa para crear o actualizar el servicio.
 
----
+## Unicidad del nombre
 
-# Responsabilidades
+- El nombre **no** es único a nivel de todo el sistema: puede repetirse entre especialidades distintas
+  (p. ej., "Valoración" en Odontología General y en Ortodoncia).
+- **No puede repetirse dentro de la misma especialidad.** Esta unicidad se valida en el **controller**
+  en creación y actualización.
+- **No existe** un índice único compuesto `(name, specialty)` en la base de datos; en condiciones de
+  concurrencia dos creaciones podrían duplicarlo. Es una limitación conocida.
 
-Cada servicio debe definir:
+## Estados
 
-- Nombre.
-- Descripción.
-- Duración.
-- Precio.
-- Especialidad a la que pertenece.
-- Estado (Activo/Inactivo).
+- Activo → puede reservarse.
+- Inactivo → no puede reservarse; se conserva para el historial.
 
----
+## Snapshot en citas
 
-# Relación con Specialty
+Al crear una cita se almacena una copia del servicio (`serviceSnapshot`: id, nombre, duración y
+precio). Las modificaciones posteriores del servicio no alteran las citas existentes.
 
-Todo servicio debe pertenecer obligatoriamente a una especialidad.
+## Modificaciones
 
-Ejemplo:
+- Solo el administrador modifica servicios (nombre, descripción, precio, duración, especialidad).
+- Los cambios aplican a futuras reservas; las citas existentes conservan su snapshot.
 
-Odontología General
+## Seguridad
 
-↓
+- Consulta: cualquier usuario autenticado.
+- Administración (crear/actualizar/desactivar): solo administrador.
 
-- Valoración
-- Limpieza Dental
-- Resina
+## Notas sobre duración y precio
 
----
-
-Ortodoncia
-
-↓
-
-- Instalación de brackets
-- Control de ortodoncia
-- Retiro de brackets
-
----
-
-# Creación
-
-Un servicio debe tener obligatoriamente:
-
-- Nombre.
-- Duración.
-- Precio.
-- Especialidad.
-
-La descripción es opcional.
-
----
-
-# Precio
-
-El precio pertenece al servicio.
-
-No pertenece al odontólogo.
-
-Todos los odontólogos de una misma especialidad utilizan el mismo precio del servicio.
-
-El precio se almacena como número entero (pesos colombianos).
-
-Ejemplo:
-
-80000
-
-No:
-
-$80.000
-
----
-
-# Duración
-
-La duración pertenece al servicio.
-
-Se almacena en minutos.
-
-Ejemplos:
-
-30
-
-45
-
-60
-
-90
-
----
-
-# Especialidad
-
-Todo servicio debe estar asociado a una única especialidad.
-
-No puede existir un servicio sin especialidad.
-
----
-
-# Estados
-
-Activo
-
-↓
-
-Puede reservarse.
-
----
-
-Inactivo
-
-↓
-
-No puede reservarse.
-
-↓
-
-Permanece disponible únicamente para conservar el historial.
-
----
-
-# Soft Delete
-
-Los servicios nunca serán eliminados físicamente.
-
-Cuando un servicio deje de ofrecerse:
-
-active = false
-
-Esto garantiza conservar la integridad histórica de las citas.
-
----
-
-# Modificaciones
-
-El administrador podrá modificar:
-
-- Nombre.
-- Descripción.
-- Precio.
-- Duración.
-- Especialidad.
-
-Los cambios aplicarán únicamente para futuras reservas.
-
-Las citas ya existentes conservarán un snapshot del servicio.
-
----
-
-# Snapshot
-
-Cuando una cita sea creada, almacenará una copia de:
-
-- Nombre.
-- Precio.
-- Duración.
-
-Esto garantiza que una modificación futura del servicio no altere el historial.
-
----
-
-# Seguridad
-
-Puede consultar servicios:
-
-- Paciente
-- Odontólogo
-- Recepcionista
-- Administrador
-
-Puede administrar servicios:
-
-- Administrador
-
----
-
-# Validaciones
-
-El nombre debe ser único.
-
-La duración debe ser mayor que cero.
-
-El precio debe ser mayor que cero.
-
-Debe existir una especialidad asociada.
-
----
-
-# Futuras mejoras
-
-- Categorías de servicios.
-- Imagen del servicio.
-- Código interno.
-- IVA configurable.
-- Promociones.
-- Precio temporal.
-- Historial de precios.
-
-# Dependencias
-
-## Depende de
-
-- Specialty
-
-## Será utilizado por
-
-- Appointment
-- Payment
-- Reportes
-- Estadísticas
-
-## Nombre del servicio
-
-El nombre del servicio no necesita ser único en todo el sistema.
-
-Sí debe ser único dentro de una misma especialidad.
-
-Ejemplo válido:
-
-Odontología General
-
-- Valoración
-
-Ortodoncia
-
-- Valoración
-
-Ejemplo NO válido:
-
-Ortodoncia
-
-- Valoración
-- Valoración
+- La duración se almacena en minutos; el código solo exige `>= 1`, no impone múltiplos de 15.
+- El precio se almacena como número entero (pesos colombianos).
