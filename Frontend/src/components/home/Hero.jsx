@@ -1,10 +1,12 @@
+import { Link } from "react-router-dom";
+
 import dentista from "../../assets/images/dentista.png";
 
 function Hero() {
 
 return(
 
-<section className="
+<section id="inicio" className="
 min-h-screen
 flex
 items-center
@@ -50,8 +52,11 @@ de forma rápida y segura.
 </p>
 
 
-<button className="
+<Link
+to="/registro"
+className="
 mt-6
+inline-block
 bg-blue-600
 text-white
 px-6
@@ -62,7 +67,7 @@ hover:bg-blue-700
 
 Agendar cita
 
-</button>
+</Link>
 
 
 </div>

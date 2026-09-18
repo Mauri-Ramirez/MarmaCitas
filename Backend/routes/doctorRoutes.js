@@ -19,26 +19,28 @@ const router = express.Router();
  * -----------------------------------------------------
  * Gestiona las operaciones CRUD de los odontólogos.
  *
- * Acceso:
- * Solo administradores.
- *
  * Proyecto: MarmaCitas
  * =====================================================
  */
 
-// Obtener todos los odontólogos
-router.get("/", verifyToken, requireRole("admin"), getDoctors);
+// Obtener todos los odontólogos activos
+// Acceso: cualquier usuario autenticado
+router.get("/", verifyToken, getDoctors);
 
 // Obtener odontólogo por ID
+// Acceso: administrador
 router.get("/:id", verifyToken, requireRole("admin"), getDoctorById);
 
 // Crear odontólogo
+// Acceso: administrador
 router.post("/", verifyToken, requireRole("admin"), createDoctor);
 
 // Actualizar odontólogo
+// Acceso: administrador
 router.put("/:id", verifyToken, requireRole("admin"), updateDoctor);
 
-// Desactivar odontólogo (Soft Delete)
+// Desactivar odontólogo
+// Acceso: administrador
 router.delete("/:id", verifyToken, requireRole("admin"), deactivateDoctor);
 
 export default router;

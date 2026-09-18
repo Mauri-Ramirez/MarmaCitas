@@ -14,3 +14,7 @@ Thumbs.db
 
 # Build
 dist/
+
+# Archivos clínicos locales
+uploads/
+uploads-test/

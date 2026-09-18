@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Specialty from "../models/Specialty.js";
+import Appointment from "../models/Appointment.js";
 import bcrypt from "bcryptjs";
 
 /**
@@ -13,14 +14,27 @@ import bcrypt from "bcryptjs";
  */
 
 /**
- * Obtener todos los odontólogos activos
+ * Obtener odontólogos activos
+ *
+ * Permite filtrar por especialidad mediante:
+ *
+ * GET /api/doctors?specialty=ID_ESPECIALIDAD
  */
 export const getDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({
+    const { specialty } = req.query;
+
+    const filter = {
       role: "doctor",
       active: true,
-    })
+    };
+
+    // Filtrar por especialidad si fue proporcionada
+    if (specialty) {
+      filter.specialty = specialty;
+    }
+
+    const doctors = await User.find(filter)
       .select("-password")
       .populate("specialty", "name");
 
@@ -257,6 +271,26 @@ export const deactivateDoctor = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({
         message: "Odontólogo no encontrado.",
+      });
+    }
+
+    // =================================================
+    // No se puede desactivar un odontólogo con citas que
+    // todavía requieren atención: en curso o confirmadas
+    // y futuras.
+    // =================================================
+
+    const blockingAppointments = await Appointment.countDocuments({
+      doctor: doctor._id,
+      $or: [
+        { status: "in_progress" },
+        { status: "confirmed", dateTime: { $gt: new Date() } },
+      ],
+    });
+
+    if (blockingAppointments > 0) {
+      return res.status(409).json({
+        message: `El odontólogo tiene ${blockingAppointments} cita(s) pendiente(s) o futura(s). Gestiona esas citas antes de desactivarlo.`,
       });
     }
 
