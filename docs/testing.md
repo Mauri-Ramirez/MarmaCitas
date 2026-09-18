@@ -94,3 +94,50 @@ Finalizado
 - Se validó la existencia y estado de la especialidad antes de crear servicios.
 - Se implementó Soft Delete.
 - Se verificó autorización mediante JWT y Roles.
+
+---
+
+# Estado actual (verificado)
+
+## Backend
+
+- **14 suites** de pruebas con `node:test`, ejecutables con `npm test` en `Backend`.
+- **Resultado verificado: 148/148 tests en verde.**
+- Las suites cubren, entre otras:
+  - autenticación y RBAC (usuario activo/rol vigente desde BD, token inválido, roles);
+  - pacientes y perfiles (incluida la búsqueda por teléfono);
+  - listados de doctores;
+  - citas: disponibilidad, pausa, jornada clínica, conflictos, estados, notas, motivo (`reason`);
+  - concurrencia (creación/reprogramación/cancelación con locks y control optimista);
+  - activación/desactivación de usuarios (guard anti-autodesactivación);
+  - integridad administrativa (desactivación de odontólogo y modificación de horario con citas
+    futuras);
+  - adjuntos (límites, aislamiento de directorio, descarga protegida).
+
+### Bases y almacenamiento de pruebas
+
+- Las suites usan la base **`marmacitas_test`** (aislada de `marmacitas`).
+- **Naturaleza destructiva:** borran colecciones en cada ejecución (`deleteMany`). No ejecutar contra
+  una base con datos reales.
+- La suite de adjuntos usa un directorio **`uploads-test`** aislado y nunca toca `uploads/` reales.
+- Ejecución serializada con `--test-concurrency=1`.
+
+## Frontend
+
+- `npm run lint` → **0 errores** (verificado).
+- `npm run build` → **exitoso** (verificado).
+- No existe suite de pruebas frontend ni E2E permanente en el repositorio.
+
+## Límites
+
+- No hay CI automatizado.
+- No hay suite frontend/E2E permanente.
+- No se afirma ningún resultado distinto del verificado aquí.
+
+---
+
+## Histórico
+
+Las secciones anteriores de este documento corresponden a sprints iniciales (autenticación y roles,
+especialidades y servicios) y se conservan como registro histórico, no como descripción del estado
+actual del sistema.
